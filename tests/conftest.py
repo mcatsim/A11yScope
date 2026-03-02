@@ -2,7 +2,7 @@
 import pytest
 from datetime import datetime
 
-from canvas_a11y.models import (
+from accessiflow.models import (
     AccessibilityIssue,
     ContentItem,
     FileItem,

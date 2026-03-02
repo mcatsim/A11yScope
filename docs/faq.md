@@ -47,11 +47,11 @@ The token inherits your Canvas user permissions. Accessiflow needs:
 An instructor-level token is sufficient for auditing your own courses.
 
 ### Can I use Accessiflow without Docker?
-Yes! Install with `pip install -e ".[web,ai]"` in a Python 3.12+ virtual environment and run `canvas-a11y-web`. See the [Getting Started guide](getting-started.md).
+Yes! Install with `pip install -e ".[web,ai]"` in a Python 3.12+ virtual environment and run `accessiflow-web`. See the [Getting Started guide](getting-started.md).
 
 ### How do I configure AI features?
 1. Get an API key from Anthropic, OpenAI, Google, or xAI
-2. Either set `CA11Y_AI_PROVIDER` and `CA11Y_AI_API_KEY` in `.env`, or configure in the web UI under "AI Provider (Optional)"
+2. Either set `ACCESSIFLOW_AI_PROVIDER` and `ACCESSIFLOW_AI_API_KEY` in `.env`, or configure in the web UI under "AI Provider (Optional)"
 3. AI is completely optional — all core features work without it
 
 ---

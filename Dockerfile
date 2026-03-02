@@ -21,4 +21,4 @@ USER appuser
 VOLUME ["/app/output"]
 EXPOSE 8080
 
-CMD ["uvicorn", "canvas_a11y.web.app:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "accessiflow.web.app:app", "--host", "0.0.0.0", "--port", "8080"]

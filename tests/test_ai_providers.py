@@ -2,8 +2,8 @@
 from __future__ import annotations
 import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
-from canvas_a11y.ai.base import AIProvider, AIResponse
-from canvas_a11y.ai.registry import get_provider, available_providers
+from accessiflow.ai.base import AIProvider, AIResponse
+from accessiflow.ai.registry import get_provider, available_providers
 
 
 def test_ai_response_dataclass():

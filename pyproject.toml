@@ -17,6 +17,7 @@ dependencies = [
     "pikepdf",
     "python-docx",
     "python-pptx",
+    "openpyxl",
 
     "click",
     "rich",
@@ -27,8 +28,8 @@ dependencies = [
 ]
 
 [project.scripts]
-canvas-a11y = "canvas_a11y.cli:cli"
-canvas-a11y-web = "canvas_a11y.web.app:main"
+accessiflow = "accessiflow.cli:cli"
+accessiflow-web = "accessiflow.web.app:main"
 
 [project.optional-dependencies]
 web = [
@@ -68,4 +69,4 @@ exclude_dirs = ["tests"]
 skips = ["B101"]  # assert OK in tests
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/canvas_a11y"]
+packages = ["src/accessiflow"]

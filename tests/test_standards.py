@@ -1,9 +1,9 @@
 """Comprehensive tests for standards mapping modules."""
 from __future__ import annotations
 import pytest
-from canvas_a11y.standards.wcag21 import WCAG_CRITERIA, WCAGCriterion, get_criterion, get_criteria_by_level, get_criteria_by_principle
-from canvas_a11y.standards.section508 import SECTION_508_PROVISIONS, get_provision, get_provisions_for_wcag
-from canvas_a11y.standards.mapping import CHECK_STANDARDS_MAP, get_standards_for_check, get_checks_for_criterion
+from accessiflow.standards.wcag21 import WCAG_CRITERIA, WCAGCriterion, get_criterion, get_criteria_by_level, get_criteria_by_principle
+from accessiflow.standards.section508 import SECTION_508_PROVISIONS, get_provision, get_provisions_for_wcag
+from accessiflow.standards.mapping import CHECK_STANDARDS_MAP, get_standards_for_check, get_checks_for_criterion
 
 
 class TestWCAGCriteria:
@@ -89,7 +89,7 @@ class TestSection508:
 
 
 class TestStandardsMapping:
-    def test_all_21_checks_mapped(self):
+    def test_all_checks_mapped(self):
         expected_checks = [
             "alt-text-missing", "alt-text-nondescriptive", "heading-hierarchy",
             "link-text-nondescriptive", "table-missing-headers", "table-missing-caption",
@@ -98,6 +98,7 @@ class TestStandardsMapping:
             "deprecated-elements", "color-contrast", "pdf-not-tagged",
             "pdf-missing-title", "pdf-missing-language", "pdf-image-only",
             "docx-images-missing-alt", "pptx-slides-missing-titles", "image-file-no-context",
+            "pptx-images-missing-alt", "xlsx-missing-sheet-titles", "xlsx-images-missing-alt",
         ]
         for check_id in expected_checks:
             assert check_id in CHECK_STANDARDS_MAP, f"Missing mapping for {check_id}"

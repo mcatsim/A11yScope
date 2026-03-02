@@ -29,8 +29,8 @@ Accessiflow audits your Canvas courses for WCAG 2.1 AA, Section 508, and VPAT co
 
 ```bash
 # Clone the repository
-git clone https://github.com/mcatsim/Canvas-accessibility-buddy.git
-cd Canvas-accessibility-buddy
+git clone https://github.com/mcatsim/Accessiflow.git
+cd Accessiflow
 
 # Copy and configure environment
 cp .env.example .env
@@ -47,8 +47,8 @@ open http://localhost:8080
 
 ```bash
 # Clone and enter
-git clone https://github.com/mcatsim/Canvas-accessibility-buddy.git
-cd Canvas-accessibility-buddy
+git clone https://github.com/mcatsim/Accessiflow.git
+cd Accessiflow
 
 # Create virtual environment
 python3.12 -m venv .venv
@@ -62,7 +62,7 @@ cp .env.example .env
 # Edit .env with your Canvas credentials
 
 # Run
-canvas-a11y-web
+accessiflow-web
 # Open http://localhost:8080
 ```
 
@@ -70,7 +70,7 @@ canvas-a11y-web
 
 ```bash
 pip install -e ".[dev]"
-canvas-a11y audit --course-id 12345
+accessiflow audit --course-id 12345
 ```
 
 ---
@@ -127,7 +127,7 @@ AI features include:
 ## Architecture
 
 ```
-src/canvas_a11y/
+src/accessiflow/
 ├── ai/              # Multi-AI provider abstraction (litellm)
 ├── canvas/          # Canvas LMS API client, content fetcher/updater
 ├── checks/          # 21 pluggable accessibility checks
@@ -152,17 +152,17 @@ src/canvas_a11y/
 
 ## Configuration
 
-All settings use the `CA11Y_` prefix and can be set via environment variables or `.env` file:
+All settings use the `ACCESSIFLOW_` prefix and can be set via environment variables or `.env` file:
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `CA11Y_CANVAS_BASE_URL` | Yes | — | Your Canvas instance URL |
-| `CA11Y_CANVAS_API_TOKEN` | Yes | — | Canvas API access token |
-| `CA11Y_OUTPUT_DIR` | No | `output` | Directory for report files |
-| `CA11Y_MAX_FILE_SIZE_MB` | No | `50` | Max file size to check |
-| `CA11Y_AI_PROVIDER` | No | — | AI provider: anthropic, openai, google, grok |
-| `CA11Y_AI_API_KEY` | No | — | API key for AI provider |
-| `CA11Y_AI_MODEL` | No | — | Override default AI model |
+| `ACCESSIFLOW_CANVAS_BASE_URL` | Yes | — | Your Canvas instance URL |
+| `ACCESSIFLOW_CANVAS_API_TOKEN` | Yes | — | Canvas API access token |
+| `ACCESSIFLOW_OUTPUT_DIR` | No | `output` | Directory for report files |
+| `ACCESSIFLOW_MAX_FILE_SIZE_MB` | No | `50` | Max file size to check |
+| `ACCESSIFLOW_AI_PROVIDER` | No | — | AI provider: anthropic, openai, google, grok |
+| `ACCESSIFLOW_AI_API_KEY` | No | — | API key for AI provider |
+| `ACCESSIFLOW_AI_MODEL` | No | — | Override default AI model |
 
 ### Getting a Canvas API Token
 

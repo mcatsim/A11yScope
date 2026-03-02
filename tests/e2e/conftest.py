@@ -4,7 +4,7 @@ import asyncio
 import pytest
 import httpx
 
-from canvas_a11y.web.app import app
+from accessiflow.web.app import app
 
 
 @pytest.fixture(scope="session")

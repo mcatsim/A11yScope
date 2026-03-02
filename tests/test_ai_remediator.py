@@ -2,9 +2,9 @@
 from __future__ import annotations
 import pytest
 from unittest.mock import AsyncMock, MagicMock
-from canvas_a11y.models import AccessibilityIssue, Severity
-from canvas_a11y.ai.base import AIProvider, AIResponse
-from canvas_a11y.remediation.ai_remediator import AIRemediator, AISuggestion
+from accessiflow.models import AccessibilityIssue, Severity
+from accessiflow.ai.base import AIProvider, AIResponse
+from accessiflow.remediation.ai_remediator import AIRemediator, AISuggestion
 
 
 @pytest.fixture

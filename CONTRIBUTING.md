@@ -6,8 +6,8 @@ Thank you for your interest in making Canvas LMS more accessible! Here's how to 
 
 ```bash
 # Fork and clone
-git clone https://github.com/YOUR-USERNAME/Canvas-accessibility-buddy.git
-cd Canvas-accessibility-buddy
+git clone https://github.com/YOUR-USERNAME/Accessiflow.git
+cd Accessiflow
 
 # Create virtual environment (Python 3.12+ required)
 python3.12 -m venv .venv
@@ -23,7 +23,7 @@ pytest tests/ -v
 ## Project Structure
 
 ```
-src/canvas_a11y/
+src/accessiflow/
 ├── ai/           # AI providers (litellm abstraction)
 ├── canvas/       # Canvas LMS API client
 ├── checks/       # Pluggable accessibility checks
@@ -37,12 +37,12 @@ src/canvas_a11y/
 
 ## Adding a New Accessibility Check
 
-1. **Create the check class** in `src/canvas_a11y/checks/`:
+1. **Create the check class** in `src/accessiflow/checks/`:
 
 ```python
-from canvas_a11y.checks.base import AccessibilityCheck
-from canvas_a11y.checks.registry import register_check
-from canvas_a11y.models import Severity
+from accessiflow.checks.base import AccessibilityCheck
+from accessiflow.checks.registry import register_check
+from accessiflow.models import Severity
 
 @register_check
 class MyNewCheck(AccessibilityCheck):
@@ -57,7 +57,7 @@ class MyNewCheck(AccessibilityCheck):
         return issues
 ```
 
-2. **Add standards mapping** in `src/canvas_a11y/standards/mapping.py`:
+2. **Add standards mapping** in `src/accessiflow/standards/mapping.py`:
 
 ```python
 "my-new-check": StandardsMapping(

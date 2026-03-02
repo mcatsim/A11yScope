@@ -43,8 +43,8 @@
 
 **Option B — Environment**: Add to `.env`:
 ```
-CA11Y_AI_PROVIDER=anthropic
-CA11Y_AI_API_KEY=sk-ant-...
+ACCESSIFLOW_AI_PROVIDER=anthropic
+ACCESSIFLOW_AI_API_KEY=sk-ant-...
 ```
 
 ### Step 4: Use
@@ -77,10 +77,10 @@ After running an audit, click the **AI** button on any issue to get:
 
 ```bash
 # In your CI pipeline
-pip install canvas-accessibility-buddy
+pip install accessiflow
 
 # Run audit and export JSON
-canvas-a11y audit --course-id $COURSE_ID --output json --output-dir reports/
+accessiflow audit --course-id $COURSE_ID --output json --output-dir reports/
 
 # Check score threshold
 python3 -c "

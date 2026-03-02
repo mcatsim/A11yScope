@@ -9,7 +9,7 @@ Covers:
 import pytest
 from datetime import datetime
 
-from canvas_a11y.scoring.engine import (
+from accessiflow.scoring.engine import (
     score_item,
     score_content_item,
     score_file_item,
@@ -18,7 +18,7 @@ from canvas_a11y.scoring.engine import (
     CHECKS_PER_CONTENT,
     CHECKS_PER_FILE,
 )
-from canvas_a11y.models import (
+from accessiflow.models import (
     AccessibilityIssue,
     ContentItem,
     FileItem,

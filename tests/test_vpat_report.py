@@ -5,12 +5,12 @@ import pytest
 from datetime import datetime
 from pathlib import Path
 
-from canvas_a11y.models import (
+from accessiflow.models import (
     CourseAuditResult, ContentItem, ContentType,
     AccessibilityIssue, Severity,
 )
-from canvas_a11y.standards.vpat import build_vpat, VPATReport, VPATRow
-from canvas_a11y.reporting.vpat_report import generate_vpat_report
+from accessiflow.standards.vpat import build_vpat, VPATReport, VPATRow
+from accessiflow.reporting.vpat_report import generate_vpat_report
 
 
 def _make_result(issues=None):

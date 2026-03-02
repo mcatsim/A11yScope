@@ -1,8 +1,8 @@
 # Contributor License Agreement (CLA)
 
-## Canvas Accessibility Buddy — Individual Contributor License Agreement
+## Accessiflow — Individual Contributor License Agreement
 
-Thank you for your interest in contributing to Canvas Accessibility Buddy
+Thank you for your interest in contributing to Accessiflow
 ("the Project"), maintained by Matt Catsimanes ("the Maintainer").
 
 By submitting a contribution (code, documentation, or other materials) to this

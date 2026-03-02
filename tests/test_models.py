@@ -11,7 +11,7 @@ import pytest
 from datetime import datetime
 from pathlib import Path
 
-from canvas_a11y.models import (
+from accessiflow.models import (
     AccessibilityIssue,
     ContentItem,
     FileItem,

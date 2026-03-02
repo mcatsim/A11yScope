@@ -5,7 +5,7 @@ from datetime import datetime
 
 import pytest
 
-from canvas_a11y.models import CourseAuditResult
+from accessiflow.models import CourseAuditResult
 
 
 def test_course_audit_result_metadata_defaults():

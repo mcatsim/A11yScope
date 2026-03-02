@@ -3,9 +3,9 @@ from __future__ import annotations
 import pytest
 from datetime import datetime
 from httpx import AsyncClient, ASGITransport
-from canvas_a11y.web.app import app
-from canvas_a11y.web.session import get_or_create_default_session, create_job
-from canvas_a11y.models import CourseAuditResult, ContentItem, ContentType, AccessibilityIssue, Severity
+from accessiflow.web.app import app
+from accessiflow.web.session import get_or_create_default_session, create_job
+from accessiflow.models import CourseAuditResult, ContentItem, ContentType, AccessibilityIssue, Severity
 
 
 def _setup_job_with_result():
@@ -30,7 +30,7 @@ def _setup_job_with_result():
         ],
         overall_score=70.0,
     )
-    from canvas_a11y.web.session import JobStatus
+    from accessiflow.web.session import JobStatus
     job.status = JobStatus.COMPLETE
     return job
 

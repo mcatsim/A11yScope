@@ -3,11 +3,11 @@ from __future__ import annotations
 import pytest
 from pathlib import Path
 from unittest.mock import patch, MagicMock
-from canvas_a11y.checks.registry import get_all_checks, get_check_by_id
-from canvas_a11y.checks.pdf_check import PDFNotTagged, PDFMissingTitle, PDFMissingLanguage, PDFImageOnly
-from canvas_a11y.checks.document_check import DocxImagesMissingAlt, PptxSlidesMissingTitles
-from canvas_a11y.checks.image_check import ImageFileMissingContext
-from canvas_a11y.models import Severity
+from accessiflow.checks.registry import get_all_checks, get_check_by_id
+from accessiflow.checks.pdf_check import PDFNotTagged, PDFMissingTitle, PDFMissingLanguage, PDFImageOnly
+from accessiflow.checks.document_check import DocxImagesMissingAlt, PptxSlidesMissingTitles
+from accessiflow.checks.image_check import ImageFileMissingContext
+from accessiflow.models import Severity
 
 
 class TestPDFChecks:

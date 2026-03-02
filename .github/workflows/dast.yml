@@ -15,8 +15,8 @@ jobs:
 
       - name: Build and start app
         run: |
-          docker build -t canvas-a11y:dast .
-          docker run -d --name cab-dast -p 8080:8080 canvas-a11y:dast
+          docker build -t accessiflow:dast .
+          docker run -d --name accessiflow-dast -p 8080:8080 accessiflow:dast
           sleep 5
           curl -sf http://localhost:8080/health
 
@@ -30,7 +30,7 @@ jobs:
 
       - name: Stop container
         if: always()
-        run: docker stop cab-dast || true
+        run: docker stop accessiflow-dast || true
 
   nikto-scan:
     name: Nikto Web Scanner
@@ -40,8 +40,8 @@ jobs:
 
       - name: Build and start app
         run: |
-          docker build -t canvas-a11y:nikto .
-          docker run -d --name cab-nikto -p 8080:8080 canvas-a11y:nikto
+          docker build -t accessiflow:nikto .
+          docker run -d --name accessiflow-nikto -p 8080:8080 accessiflow:nikto
           sleep 5
 
       - name: Install Nikto
@@ -59,4 +59,4 @@ jobs:
 
       - name: Stop container
         if: always()
-        run: docker stop cab-nikto || true
+        run: docker stop accessiflow-nikto || true

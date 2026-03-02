@@ -24,15 +24,15 @@
 ### Docker (Easiest)
 
 ```bash
-git clone https://github.com/mcatsim/Canvas-accessibility-buddy.git
-cd Canvas-accessibility-buddy
+git clone https://github.com/mcatsim/Accessiflow.git
+cd Accessiflow
 cp .env.example .env
 ```
 
 Edit `.env` and add your Canvas URL and API token:
 ```
-CA11Y_CANVAS_BASE_URL=https://canvas.yourschool.edu
-CA11Y_CANVAS_API_TOKEN=your-token-here
+ACCESSIFLOW_CANVAS_BASE_URL=https://canvas.yourschool.edu
+ACCESSIFLOW_CANVAS_API_TOKEN=your-token-here
 ```
 
 Start the application:
@@ -45,14 +45,14 @@ Open http://localhost:8080 in your browser.
 ### Local Installation
 
 ```bash
-git clone https://github.com/mcatsim/Canvas-accessibility-buddy.git
-cd Canvas-accessibility-buddy
+git clone https://github.com/mcatsim/Accessiflow.git
+cd Accessiflow
 python3.12 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[web,ai]"
 cp .env.example .env
 # Edit .env with your credentials
-canvas-a11y-web
+accessiflow-web
 ```
 
 ## Step 3: Run Your First Audit

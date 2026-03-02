@@ -1,14 +1,14 @@
 services:
-  canvas-a11y:
+  accessiflow:
     build: .
     ports:
       - "8080:8080"
     volumes:
       - ./output:/app/output
     environment:
-      - CA11Y_CANVAS_BASE_URL=${CA11Y_CANVAS_BASE_URL:-https://canvas.yourschool.edu}
-      - CA11Y_CANVAS_API_TOKEN=${CA11Y_CANVAS_API_TOKEN:-}
-      - CA11Y_AI_PROVIDER=${CA11Y_AI_PROVIDER:-}
-      - CA11Y_AI_API_KEY=${CA11Y_AI_API_KEY:-}
-      - CA11Y_AI_MODEL=${CA11Y_AI_MODEL:-}
+      - ACCESSIFLOW_CANVAS_BASE_URL=${ACCESSIFLOW_CANVAS_BASE_URL:-https://canvas.yourschool.edu}
+      - ACCESSIFLOW_CANVAS_API_TOKEN=${ACCESSIFLOW_CANVAS_API_TOKEN:-}
+      - ACCESSIFLOW_AI_PROVIDER=${ACCESSIFLOW_AI_PROVIDER:-}
+      - ACCESSIFLOW_AI_API_KEY=${ACCESSIFLOW_AI_API_KEY:-}
+      - ACCESSIFLOW_AI_MODEL=${ACCESSIFLOW_AI_MODEL:-}
     restart: unless-stopped

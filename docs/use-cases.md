@@ -70,7 +70,7 @@ For multi-user deployment, consider running behind an SSO-protected reverse prox
 Use the CLI for automated scanning:
 
 ```bash
-canvas-a11y audit --course-id 12345 --output json --output-dir reports/
+accessiflow audit --course-id 12345 --output json --output-dir reports/
 ```
 
 Parse the JSON output to fail builds below a threshold:

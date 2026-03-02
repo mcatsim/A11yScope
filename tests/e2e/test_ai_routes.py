@@ -2,7 +2,7 @@
 from __future__ import annotations
 import pytest
 from httpx import AsyncClient, ASGITransport
-from canvas_a11y.web.app import app
+from accessiflow.web.app import app
 
 
 @pytest.mark.asyncio
