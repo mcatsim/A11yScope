@@ -7,12 +7,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxml2-dev libxslt1-dev gcc && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
+# Copy source + project metadata
 COPY pyproject.toml .
-RUN pip install --no-cache-dir ".[web]"
-
-# Copy source
 COPY src/ src/
+
+# Install with web extras
+RUN pip install --no-cache-dir ".[web]"
 
 # Non-root user
 RUN useradd -m appuser && chown -R appuser:appuser /app
