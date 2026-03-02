@@ -1,0 +1,6 @@
+10010	IGNORE	(Cookie No HttpOnly Flag - not applicable, no cookies)
+10011	IGNORE	(Cookie Without Secure Flag - not applicable, no cookies)
+10015	IGNORE	(Re-examine Cache-control Directives - informational)
+10098	IGNORE	(Cross-Domain Misconfiguration - local tool)
+10109	IGNORE	(Modern Web Application - informational)
+10202	IGNORE	(Absence of Anti-CSRF Tokens - API uses JSON, not forms)

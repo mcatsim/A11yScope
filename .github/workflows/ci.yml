@@ -1,0 +1,49 @@
+name: CI — Tests & Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install ".[dev,web]"
+      - name: Run unit tests
+        run: pytest tests/ --ignore=tests/e2e -v --tb=short
+
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install ".[web,e2e]"
+      - name: Run E2E tests
+        run: pytest tests/e2e/ -v --tb=short
+
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t canvas-a11y:test .
+      - name: Smoke test — container starts
+        run: |
+          docker run -d --name cab-test -p 8080:8080 canvas-a11y:test
+          sleep 3
+          curl -sf http://localhost:8080/health | grep '"ok"'
+          docker logs cab-test
+          docker stop cab-test

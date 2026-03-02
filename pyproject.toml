@@ -1,0 +1,68 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "canvas-accessibility-buddy"
+version = "0.1.0"
+description = "WCAG 2.1 AA accessibility auditor for Canvas LMS — Web GUI + CLI"
+license = "AGPL-3.0-only"
+authors = [{ name = "Matt Catsimanes", email = "matt@catsimanes.com" }]
+requires-python = ">=3.12"
+dependencies = [
+    "httpx",
+    "beautifulsoup4",
+    "lxml",
+    "wcag-contrast-ratio",
+    "pikepdf",
+    "python-docx",
+    "python-pptx",
+    "anthropic",
+    "click",
+    "rich",
+    "pydantic",
+    "pydantic-settings",
+    "Jinja2",
+    "python-dotenv",
+]
+
+[project.scripts]
+canvas-a11y = "canvas_a11y.cli:cli"
+canvas-a11y-web = "canvas_a11y.web.app:main"
+
+[project.optional-dependencies]
+web = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.34",
+    "python-multipart",
+    "websockets>=14.0",
+]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-httpx",
+    "respx",
+    "coverage",
+]
+e2e = [
+    "pytest",
+    "pytest-asyncio",
+    "httpx",
+    "websockets>=14.0",
+]
+security = [
+    "bandit[toml]",
+    "pip-audit",
+    "semgrep",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101"]  # assert OK in tests
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/canvas_a11y"]

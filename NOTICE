@@ -1,0 +1,31 @@
+Canvas Accessibility Buddy
+Copyright (c) 2026 Matt Catsimanes. All rights reserved.
+
+This software is licensed under the GNU Affero General Public License v3.0
+(AGPL-3.0). See the LICENSE file for the full license text.
+
+This product includes software developed by Matt Catsimanes and contributors.
+
+THIRD-PARTY NOTICES
+───────────────────
+
+This software uses the following open-source libraries, each under their
+own license terms:
+
+  - FastAPI (MIT) — https://github.com/tiangolo/fastapi
+  - httpx (BSD-3-Clause) — https://github.com/encode/httpx
+  - Pydantic (MIT) — https://github.com/pydantic/pydantic
+  - BeautifulSoup4 (MIT) — https://www.crummy.com/software/BeautifulSoup/
+  - lxml (BSD-3-Clause) — https://lxml.de/
+  - Alpine.js (MIT) — https://github.com/alpinejs/alpine
+  - Pico CSS (MIT) — https://github.com/picocss/pico
+  - Jinja2 (BSD-3-Clause) — https://github.com/pallets/jinja
+  - pikepdf (MPL-2.0) — https://github.com/pikepdf/pikepdf
+  - python-docx (MIT) — https://github.com/python-openxml/python-docx
+  - python-pptx (MIT) — https://github.com/scanny/python-pptx
+  - Click (BSD-3-Clause) — https://github.com/pallets/click
+  - Rich (MIT) — https://github.com/Textualize/rich
+  - uvicorn (BSD-3-Clause) — https://github.com/encode/uvicorn
+  - wcag-contrast-ratio (MIT) — https://pypi.org/project/wcag-contrast-ratio/
+
+For the full list of dependencies and their licenses, see pyproject.toml.
