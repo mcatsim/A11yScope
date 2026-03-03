@@ -70,23 +70,59 @@ async def run_audit(
 
             # Phase: checking
             checks = get_all_checks()
-            await emit({"type": "phase", "phase": "checking", "label": f"Running {len(checks)} checks..."})
+            await emit({"type": "phase", "phase": "checking", "label": "Checking content items"})
 
             checked = 0
+            total_issues = 0
             total = len([i for i in content_items if i.html_content])
             for item in content_items:
                 if not item.html_content:
                     continue
+
+                # Emit item_start
+                await emit({
+                    "type": "item_start",
+                    "item_id": str(item.id),
+                    "item_type": item.content_type.value,
+                    "title": item.title,
+                    "index": checked + 1,
+                    "total": total,
+                })
+
                 for check in checks:
                     issues = check.check_html(item.html_content, item.url)
                     item.issues.extend(issues)
                 checked += 1
+                total_issues += len(item.issues)
+
+                # Emit item_checked (backward compat)
                 await emit({
                     "type": "item_checked",
                     "title": item.title,
                     "issues": len(item.issues),
                     "checked": checked,
                     "total": total,
+                })
+
+                # Emit item_done
+                await emit({
+                    "type": "item_done",
+                    "item_id": str(item.id),
+                    "issues": len(item.issues),
+                    "index": checked,
+                    "total": total,
+                })
+
+                # Emit stats summary
+                progress_pct = int((checked / max(total + file_count, 1)) * 100)
+                await emit({
+                    "type": "stats",
+                    "items_checked": checked,
+                    "items_total": total,
+                    "issues_found": total_issues,
+                    "files_checked": 0,
+                    "files_total": file_count,
+                    "progress_pct": progress_pct,
                 })
 
             # Phase: files
@@ -98,10 +134,23 @@ async def run_audit(
                 if Path(f.filename).suffix.lower() in checkable_extensions and f.size <= max_size
             ]
 
+            files_checked = 0
+            files_total = len(files_to_check)
+
             if files_to_check:
-                await emit({"type": "phase", "phase": "files", "label": f"Checking {len(files_to_check)} files..."})
+                await emit({"type": "phase", "phase": "files", "label": f"Checking {files_total} files..."})
 
                 for file_item in files_to_check:
+                    # Emit item_start for file
+                    await emit({
+                        "type": "item_start",
+                        "item_id": str(file_item.id),
+                        "item_type": "file",
+                        "title": file_item.display_name,
+                        "index": files_checked + 1,
+                        "total": files_total,
+                    })
+
                     try:
                         local_path = await file_manager.download_file(file_item)
                         for check in checks:
@@ -115,6 +164,30 @@ async def run_audit(
                         })
                     except Exception:
                         pass
+
+                    files_checked += 1
+                    total_issues += len(file_item.issues)
+
+                    # Emit item_done for file
+                    await emit({
+                        "type": "item_done",
+                        "item_id": str(file_item.id),
+                        "issues": len(file_item.issues),
+                        "index": files_checked,
+                        "total": files_total,
+                    })
+
+                    # Emit stats summary
+                    progress_pct = int(((checked + files_checked) / max(total + files_total, 1)) * 100)
+                    await emit({
+                        "type": "stats",
+                        "items_checked": checked,
+                        "items_total": total,
+                        "issues_found": total_issues,
+                        "files_checked": files_checked,
+                        "files_total": files_total,
+                        "progress_pct": progress_pct,
+                    })
 
             # Phase: scoring
             await emit({"type": "phase", "phase": "scoring", "label": "Calculating scores..."})

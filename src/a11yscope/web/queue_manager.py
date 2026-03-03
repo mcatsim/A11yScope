@@ -32,6 +32,7 @@ class QueuedJob:
     items_checked: int = 0
     issues_found: int = 0
     error: str | None = None
+    result: Any = None  # CourseAuditResult when complete
     progress_log: list[dict[str, Any]] = field(default_factory=list)
     db_session_factory: Any = None
     decrypt_fn: Callable | None = None
@@ -106,11 +107,94 @@ class ScanQueueManager:
                 queue.task_done()
 
     async def _execute_job(self, job_id: str, **kwargs: Any) -> None:
-        """Run the actual audit. Override in tests."""
-        # Real implementation will call audit_runner.run_audit()
-        # This is a placeholder -- Task 13 will wire it up
+        """Run the actual audit via audit_runner.run_audit().
+
+        Decrypts the API key, creates an AuditJob for the session layer,
+        wires up a progress callback that updates the QueuedJob fields
+        and progress_log, then dereferences the key after completion.
+        """
+        from a11yscope.web.audit_runner import run_audit
+        from a11yscope.web.session import AuditJob, JobStatus
+
         job = self._jobs[job_id]
-        job.status = "complete"
+        api_token: str | None = None
+
+        try:
+            # Decrypt the API key
+            if job.decrypt_fn is not None:
+                api_token = job.decrypt_fn(job.api_key_id)
+            else:
+                raise ValueError("No decrypt function provided for job")
+
+            if not api_token:
+                raise ValueError("Failed to decrypt API token")
+
+            # Create an AuditJob for the session-layer audit runner
+            audit_job = AuditJob(
+                job_id=job.job_id,
+                course_id=job.course_id,
+                user_id=job.user_id,
+                course_name=job.course_name,
+            )
+
+            # Progress callback: updates QueuedJob fields and appends to log
+            async def on_progress(msg: dict[str, Any]) -> None:
+                # Check for cancellation
+                if job.cancel_event.is_set():
+                    raise asyncio.CancelledError("Job cancelled by user")
+
+                # Append to progress log for WebSocket replay
+                job.progress_log.append(msg)
+
+                msg_type = msg.get("type")
+
+                if msg_type == "phase":
+                    job.current_phase = msg.get("phase")
+                elif msg_type == "item_found":
+                    job.items_total = msg.get("count", 0)
+                elif msg_type == "item_start":
+                    job.current_item = msg.get("title")
+                elif msg_type in ("item_checked", "item_done"):
+                    job.items_checked = msg.get("checked", msg.get("index", job.items_checked))
+                elif msg_type == "stats":
+                    job.progress_pct = msg.get("progress_pct", job.progress_pct)
+                    job.items_checked = msg.get("items_checked", job.items_checked)
+                    job.issues_found = msg.get("issues_found", job.issues_found)
+                    job.items_total = msg.get("items_total", job.items_total)
+                elif msg_type == "file_checked":
+                    pass  # Already handled by stats
+                elif msg_type == "complete":
+                    job.progress_pct = 100
+                elif msg_type == "error":
+                    logger.warning("Audit error for job %s: %s", job_id, msg.get("message"))
+
+            # Run the audit
+            result = await run_audit(
+                job=audit_job,
+                canvas_base_url=job.canvas_url,
+                canvas_api_token=api_token,
+                on_progress=on_progress,
+            )
+
+            # Store result and mark complete
+            job.result = result
+            job.status = "complete"
+            job.progress_pct = 100
+            job.current_phase = "complete"
+            job.current_item = None
+
+        except asyncio.CancelledError:
+            job.status = "cancelled"
+            job.progress_log.append({"type": "error", "message": "Scan cancelled"})
+            logger.info("Job %s cancelled", job_id)
+        except Exception as exc:
+            job.status = "failed"
+            job.error = str(exc)
+            job.progress_log.append({"type": "error", "message": str(exc)})
+            raise
+        finally:
+            # Dereference the decrypted key from memory
+            api_token = None  # noqa: F841
 
     def get_job_status(self, job_id: str) -> dict[str, Any] | None:
         """Get current status of a job."""
