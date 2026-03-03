@@ -16,7 +16,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install dependencies
-        run: pip install ".[dev,web]"
+        run: pip install ".[dev,web,auth]"
       - name: Run unit tests
         run: pytest tests/ --ignore=tests/e2e -v --tb=short
 
@@ -29,7 +29,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install dependencies
-        run: pip install ".[web,e2e]"
+        run: pip install ".[web,e2e,auth]"
       - name: Run E2E tests
         run: pytest tests/e2e/ -v --tb=short
 
