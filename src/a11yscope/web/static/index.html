@@ -369,6 +369,114 @@
 
         .hidden { display: none; }
 
+        /* ── Active scan cards ────────────────────────────────── */
+        .scan-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin-top: .75rem;
+            cursor: pointer;
+            transition: box-shadow .15s, border-color .15s;
+        }
+        .scan-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(37,99,235,.1);
+        }
+        .scan-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: .5rem;
+        }
+        .scan-card-header h4 {
+            margin: 0;
+            font-size: .95rem;
+            font-weight: 600;
+        }
+        .scan-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: .82rem;
+            color: var(--muted);
+            margin-top: .5rem;
+        }
+        .scan-card-meta .issue-count {
+            font-weight: 600;
+            color: var(--warn);
+        }
+        .scan-progress-row {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+        .scan-progress-row .progress-bar {
+            flex: 1;
+        }
+        .scan-progress-row .pct-label {
+            font-size: .82rem;
+            font-weight: 600;
+            min-width: 3rem;
+            text-align: right;
+            color: var(--primary);
+        }
+
+        /* ── Queue list ───────────────────────────────────────── */
+        .queue-item {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .6rem .25rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .queue-item:last-child { border-bottom: none; }
+        .queue-pos {
+            width: 1.75rem;
+            height: 1.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--warn-bg);
+            color: var(--warn);
+            font-weight: 700;
+            font-size: .78rem;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .queue-name {
+            flex: 1;
+            font-size: .9rem;
+            font-weight: 500;
+        }
+        .btn-cancel {
+            width: 1.5rem;
+            height: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            border-radius: 4px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all .12s;
+        }
+        .btn-cancel:hover {
+            background: var(--fail-bg);
+            color: var(--fail);
+        }
+
+        /* ── Pulse animation for active dot ───────────────────── */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .4; }
+        }
+        .status-dot.active {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
         /* ── Login card ──────────────────────────────────────── */
         .login-card {
             max-width: 400px; margin: 4rem auto;
@@ -543,39 +651,64 @@
                             <!-- Active Scans -->
                             <div class="card">
                                 <div class="flex items-center justify-between mb-1">
-                                    <h3 style="font-size:1.05rem;margin:0;">Active Scans</h3>
+                                    <h3 style="font-size:1.05rem;margin:0;">
+                                        <span class="status-dot active"></span>
+                                        Active Scans
+                                    </h3>
                                     <span class="text-sm text-muted" x-text="activeScans.length + ' running'"></span>
                                 </div>
                                 <div x-show="activeScans.length === 0" class="empty-state" style="padding:1.5rem;">
                                     <p class="text-muted text-sm">No active scans. Click <strong>+ New Scan</strong> to start one.</p>
                                 </div>
-                                <template x-for="scan in activeScans" :key="scan.id">
-                                    <div class="flex items-center gap-2" style="padding:.5rem 0;border-bottom:1px solid var(--border);">
-                                        <span class="status-dot active"></span>
-                                        <span x-text="scan.course_name || scan.label || 'Scan'"></span>
-                                        <span class="text-muted text-sm" x-text="scan.status"></span>
+                                <template x-for="scan in activeScans" :key="scan.job_id || scan.id">
+                                    <div class="scan-card" @click="selectedScanId = scan.job_id || scan.id; navigateTo('detail')">
+                                        <div class="scan-card-header">
+                                            <h4 x-text="scan.course_name || scan.label || 'Scan'"></h4>
+                                            <span class="sev sev-moderate" x-text="scan.phase || scan.status || 'running'"></span>
+                                        </div>
+                                        <div class="scan-progress-row">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" :style="'width:' + (scan.progress_pct || 0) + '%'"></div>
+                                            </div>
+                                            <span class="pct-label" x-text="(scan.progress_pct || 0).toFixed(0) + '%'"></span>
+                                        </div>
+                                        <div class="scan-card-meta">
+                                            <span x-show="scan.current_item" x-text="scan.current_item"></span>
+                                            <span x-show="scan.total_issues != null" class="issue-count" x-text="(scan.total_issues || 0) + ' issues'"></span>
+                                        </div>
                                     </div>
                                 </template>
                             </div>
 
                             <!-- Queued Scans -->
-                            <div class="card" x-show="queuedScans.length > 0">
-                                <div class="flex items-center justify-between mb-1">
-                                    <h3 style="font-size:1.05rem;margin:0;">Queued</h3>
-                                    <span class="text-sm text-muted" x-text="queuedScans.length + ' waiting'"></span>
-                                </div>
-                                <template x-for="scan in queuedScans" :key="scan.id">
-                                    <div class="flex items-center gap-2" style="padding:.5rem 0;border-bottom:1px solid var(--border);">
-                                        <span class="status-dot queued"></span>
-                                        <span x-text="scan.course_name || scan.label || 'Scan'"></span>
-                                    </div>
-                                </template>
-                            </div>
-
-                            <!-- Recent Scans -->
                             <div class="card">
                                 <div class="flex items-center justify-between mb-1">
-                                    <h3 style="font-size:1.05rem;margin:0;">Recent Scans</h3>
+                                    <h3 style="font-size:1.05rem;margin:0;">
+                                        <span class="status-dot queued"></span>
+                                        Queue
+                                    </h3>
+                                    <span class="text-sm text-muted" x-text="queuedScans.length + ' waiting'"></span>
+                                </div>
+                                <div x-show="queuedScans.length === 0" class="empty-state" style="padding:1.5rem;">
+                                    <p class="text-muted text-sm">No scans queued</p>
+                                </div>
+                                <div x-show="queuedScans.length > 0">
+                                    <template x-for="(scan, idx) in queuedScans" :key="scan.job_id || scan.id">
+                                        <div class="queue-item">
+                                            <span class="queue-pos" x-text="idx + 1"></span>
+                                            <span class="queue-name" x-text="scan.course_name || scan.label || 'Scan'"></span>
+                                            <button class="btn-cancel" @click.stop="cancelScan(scan.job_id || scan.id)" title="Cancel scan" aria-label="Cancel scan">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                            </button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <!-- Recently Completed -->
+                            <div class="card">
+                                <div class="flex items-center justify-between mb-1">
+                                    <h3 style="font-size:1.05rem;margin:0;">Recently Completed</h3>
                                     <button class="btn btn-ghost btn-sm" @click="navigateTo('history')">View All</button>
                                 </div>
                                 <div x-show="recentScans.length === 0" class="empty-state" style="padding:1.5rem;">
@@ -585,23 +718,19 @@
                                 </div>
                                 <div x-show="recentScans.length > 0" style="overflow-x:auto;">
                                     <table class="tbl">
-                                        <thead><tr><th>Course</th><th>Date</th><th class="tr">Score</th><th class="tr">Issues</th><th>Status</th></tr></thead>
+                                        <thead><tr><th>Course</th><th class="tr">Score</th><th class="tr">Issues</th><th>When</th></tr></thead>
                                         <tbody>
-                                            <template x-for="scan in recentScans" :key="scan.id">
-                                                <tr style="cursor:pointer;" @click="selectedScanId = scan.id; navigateTo('detail')">
-                                                    <td x-text="scan.course_name || '—'"></td>
-                                                    <td class="text-sm text-muted" x-text="formatDate(scan.created_at)"></td>
+                                            <template x-for="scan in dashboardRecent" :key="scan.job_id || scan.id">
+                                                <tr style="cursor:pointer;" @click="selectedScanId = scan.job_id || scan.id; navigateTo('detail')">
+                                                    <td>
+                                                        <span x-text="scan.course_name || '—'"></span>
+                                                        <span x-show="scan.status === 'failed'" class="sev sev-critical" style="margin-left:.35rem;">failed</span>
+                                                    </td>
                                                     <td class="tr">
                                                         <span class="score-pill" :class="scoreClass(scan.overall_score)" x-text="scan.overall_score != null ? scan.overall_score.toFixed(1) + '%' : '—'"></span>
                                                     </td>
                                                     <td class="tr" x-text="scan.total_issues ?? '—'"></td>
-                                                    <td>
-                                                        <span class="sev" :class="{
-                                                            'sev-minor': scan.status === 'complete',
-                                                            'sev-critical': scan.status === 'failed',
-                                                            'sev-moderate': scan.status === 'running'
-                                                        }" x-text="scan.status"></span>
-                                                    </td>
+                                                    <td class="text-sm text-muted" x-text="timeAgo(scan.completed_at || scan.created_at)"></td>
                                                 </tr>
                                             </template>
                                         </tbody>

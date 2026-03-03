@@ -53,6 +53,8 @@ function dashboardApp() {
     activeScans: [],
     queuedScans: [],
     recentScans: [],
+    dashboardWsMap: {},      // job_id -> WebSocket (per active scan)
+    dashboardInterval: null, // polling interval handle
 
     // ─── API Keys ──────────────────────────────────────────
     savedKeys: [],
@@ -135,6 +137,10 @@ function dashboardApp() {
         this.loadKeys(),
         this.loadScans(),
       ]);
+      // Start dashboard polling if we're on the dashboard view
+      if (this.currentView === 'dashboard') {
+        this.startDashboardPolling();
+      }
     },
 
     async loadKeys() {
@@ -156,8 +162,12 @@ function dashboardApp() {
           this.activeScans = scans.filter(s => s.status === 'running');
           this.queuedScans = scans.filter(s => s.status === 'queued' || s.status === 'pending');
           this.recentScans = scans.filter(s => s.status === 'complete' || s.status === 'failed')
-            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+            .sort((a, b) => new Date(b.completed_at || b.created_at) - new Date(a.completed_at || a.created_at))
             .slice(0, 20);
+          // Manage per-scan WebSocket connections for active scans on dashboard
+          if (this.currentView === 'dashboard') {
+            this.syncDashboardWs();
+          }
         }
       } catch (e) {
         // Scans endpoint may not exist yet — ignore
@@ -166,12 +176,19 @@ function dashboardApp() {
 
     // ─── Navigation ────────────────────────────────────────
     navigateTo(view) {
+      // Stop dashboard polling/ws when leaving dashboard
+      if (this.currentView === 'dashboard' && view !== 'dashboard') {
+        this.stopDashboardPolling();
+        this.closeDashboardWs();
+      }
+
       this.currentView = view;
       this.sidebarOpen = false; // close mobile sidebar on nav
 
       // Refresh data when navigating to certain views
       if (view === 'dashboard') {
         this.loadScans();
+        this.startDashboardPolling();
       } else if (view === 'keys') {
         this.loadKeys();
       } else if (view === 'history') {
@@ -262,6 +279,8 @@ function dashboardApp() {
     },
 
     async logout() {
+      this.stopDashboardPolling();
+      this.closeDashboardWs();
       try {
         await fetchWithAuth('/api/auth/logout', { method: 'POST' });
       } catch (e) {}
@@ -281,6 +300,11 @@ function dashboardApp() {
 
     get canAudit() {
       return this.authMode === 'none' || (this.authUser && ['admin', 'auditor'].includes(this.authUser.role));
+    },
+
+    // ─── Dashboard computed ─────────────────────────────────
+    get dashboardRecent() {
+      return this.recentScans.slice(0, 10);
     },
 
     get displayName() {
@@ -328,6 +352,137 @@ function dashboardApp() {
       } catch (e) {
         // ignore
       }
+    },
+
+    // ─── Dashboard polling & WebSocket ─────────────────────
+    startDashboardPolling() {
+      this.stopDashboardPolling(); // clear any existing interval
+      this.dashboardInterval = setInterval(() => {
+        this.loadScans();
+      }, 3000);
+    },
+
+    stopDashboardPolling() {
+      if (this.dashboardInterval) {
+        clearInterval(this.dashboardInterval);
+        this.dashboardInterval = null;
+      }
+    },
+
+    syncDashboardWs() {
+      const activeIds = new Set(this.activeScans.map(s => s.job_id || s.id));
+
+      // Close WS for scans that are no longer active
+      for (const jobId of Object.keys(this.dashboardWsMap)) {
+        if (!activeIds.has(jobId)) {
+          try { this.dashboardWsMap[jobId].close(); } catch (e) {}
+          delete this.dashboardWsMap[jobId];
+        }
+      }
+
+      // Open WS for new active scans
+      for (const scan of this.activeScans) {
+        const jobId = scan.job_id || scan.id;
+        if (!this.dashboardWsMap[jobId]) {
+          this.openDashboardWs(jobId);
+        }
+      }
+    },
+
+    openDashboardWs(jobId) {
+      const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+      let wsUrl = `${proto}://${location.host}/ws/scan/${jobId}`;
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        wsUrl += `?token=${encodeURIComponent(token)}`;
+      }
+
+      try {
+        const ws = new WebSocket(wsUrl);
+
+        ws.onmessage = (event) => {
+          const msg = JSON.parse(event.data);
+          // Update the matching active scan in-place
+          const scan = this.activeScans.find(s => (s.job_id || s.id) === jobId);
+          if (!scan) return;
+
+          switch (msg.type) {
+            case 'phase':
+              scan.phase = msg.label || msg.phase;
+              const phases = { fetching: 10, checking: 40, files: 70, scoring: 90 };
+              if (phases[msg.phase]) scan.progress_pct = phases[msg.phase];
+              break;
+            case 'item_checked':
+              scan.current_item = msg.title;
+              scan.total_issues = (scan.total_issues || 0) + (msg.issues || 0);
+              if (msg.total > 0) scan.progress_pct = 40 + (msg.checked / msg.total) * 30;
+              break;
+            case 'file_checked':
+              scan.current_item = msg.name;
+              break;
+            case 'complete':
+              scan.progress_pct = 100;
+              scan.phase = 'complete';
+              // Refresh scan lists to move this scan from active to recent
+              this.loadScans();
+              break;
+            case 'error':
+              scan.phase = 'error';
+              this.loadScans();
+              break;
+          }
+        };
+
+        ws.onclose = () => {
+          delete this.dashboardWsMap[jobId];
+        };
+
+        ws.onerror = () => {
+          // Will fall back to polling
+          try { ws.close(); } catch (e) {}
+          delete this.dashboardWsMap[jobId];
+        };
+
+        this.dashboardWsMap[jobId] = ws;
+      } catch (e) {
+        // WebSocket not available — polling will handle it
+      }
+    },
+
+    closeDashboardWs() {
+      for (const jobId of Object.keys(this.dashboardWsMap)) {
+        try { this.dashboardWsMap[jobId].close(); } catch (e) {}
+      }
+      this.dashboardWsMap = {};
+    },
+
+    // ─── Cancel scan ─────────────────────────────────────────
+    async cancelScan(scanId) {
+      try {
+        await fetchWithAuth(`/api/scans/${scanId}`, { method: 'DELETE' });
+        await this.loadScans();
+      } catch (e) {
+        // ignore — will refresh on next poll
+      }
+    },
+
+    // ─── Relative time formatting ────────────────────────────
+    timeAgo(dateStr) {
+      if (!dateStr) return '—';
+      const now = Date.now();
+      const then = new Date(dateStr).getTime();
+      const diffSec = Math.floor((now - then) / 1000);
+
+      if (diffSec < 10) return 'just now';
+      if (diffSec < 60) return diffSec + 's ago';
+      const diffMin = Math.floor(diffSec / 60);
+      if (diffMin < 60) return diffMin + 'm ago';
+      const diffHr = Math.floor(diffMin / 60);
+      if (diffHr < 24) return diffHr + 'h ago';
+      const diffDay = Math.floor(diffHr / 24);
+      if (diffDay < 7) return diffDay + 'd ago';
+      if (diffDay < 30) return Math.floor(diffDay / 7) + 'w ago';
+      return this.formatDate(dateStr);
     },
 
     // ─── Results helpers (preserved for scan detail view) ──
