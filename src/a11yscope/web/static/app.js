@@ -72,6 +72,21 @@ function dashboardApp() {
     progressPct: 0,
     ws: null,
 
+    // ─── Scan detail view state ──────────────────────────────
+    detailScan: null,
+    detailItems: [],
+    detailStats: { items_done: 0, items_total: 0, issues: 0, files_done: 0, files_total: 0, progress_pct: 0 },
+    detailWs: null,
+    detailLoading: false,
+    detailPhases: [
+      { key: 'fetching', label: 'Fetching' },
+      { key: 'checking', label: 'Checking' },
+      { key: 'files', label: 'Files' },
+      { key: 'scoring', label: 'Scoring' },
+    ],
+    detailCurrentPhase: null,
+    detailPollTimer: null,
+
     // ─── Fix state (preserved for scan detail view) ────────
     selectedFixes: [],
     pushToCanvas: false,
@@ -185,6 +200,11 @@ function dashboardApp() {
       this.currentView = view;
       this.sidebarOpen = false; // close mobile sidebar on nav
 
+      // Clean up detail view ws/polling when leaving detail
+      if (this.currentView === 'detail' && view !== 'detail') {
+        this.closeDetailWs();
+      }
+
       // Refresh data when navigating to certain views
       if (view === 'dashboard') {
         this.loadScans();
@@ -193,6 +213,8 @@ function dashboardApp() {
         this.loadKeys();
       } else if (view === 'history') {
         this.loadScans();
+      } else if (view === 'detail') {
+        this.loadScanDetail(this.selectedScanId);
       }
     },
 
@@ -281,6 +303,7 @@ function dashboardApp() {
     async logout() {
       this.stopDashboardPolling();
       this.closeDashboardWs();
+      this.closeDetailWs();
       try {
         await fetchWithAuth('/api/auth/logout', { method: 'POST' });
       } catch (e) {}
@@ -464,6 +487,373 @@ function dashboardApp() {
       } catch (e) {
         // ignore — will refresh on next poll
       }
+    },
+
+    // ─── Scan Detail View ──────────────────────────────────
+    async loadScanDetail(scanId) {
+      if (!scanId) return;
+      this.detailLoading = true;
+      this.detailItems = [];
+      this.detailStats = { items_done: 0, items_total: 0, issues: 0, files_done: 0, files_total: 0, progress_pct: 0 };
+      this.detailCurrentPhase = null;
+      this.result = null;
+
+      try {
+        const resp = await fetchWithAuth(`/api/scans/${scanId}`);
+        if (!resp.ok) {
+          this.detailScan = { status: 'failed', error: 'Failed to load scan (HTTP ' + resp.status + ')' };
+          this.detailLoading = false;
+          return;
+        }
+        const data = await resp.json();
+        this.detailScan = data;
+        this.jobId = scanId;
+
+        if (data.status === 'complete' && data.result_json) {
+          // Completed scan — show results
+          this.result = data.result_json;
+          this.detailCurrentPhase = 'complete';
+          this.detailStats.progress_pct = 100;
+        } else if (data.status === 'complete' && data.result) {
+          this.result = data.result;
+          this.detailCurrentPhase = 'complete';
+          this.detailStats.progress_pct = 100;
+        } else if (data.status === 'failed') {
+          this.detailCurrentPhase = 'error';
+        } else if (data.status === 'running') {
+          // Running scan — connect WebSocket for live updates
+          this.detailCurrentPhase = data.current_phase || data.phase || 'fetching';
+          if (data.progress_pct) this.detailStats.progress_pct = data.progress_pct;
+          this.openDetailWs(scanId);
+        } else {
+          // Queued or pending — start polling
+          this.startDetailPolling(scanId);
+        }
+      } catch (e) {
+        this.detailScan = { status: 'failed', error: 'Network error: ' + e.message };
+      } finally {
+        this.detailLoading = false;
+      }
+    },
+
+    openDetailWs(scanId) {
+      this.closeDetailWs(); // clean up any prior connection
+
+      const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+      let wsUrl = `${proto}://${location.host}/ws/scan/${scanId}`;
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        wsUrl += `?token=${encodeURIComponent(token)}`;
+      }
+
+      try {
+        const ws = new WebSocket(wsUrl);
+
+        ws.onmessage = (event) => {
+          const msg = JSON.parse(event.data);
+          this.handleDetailMessage(msg);
+        };
+
+        ws.onclose = () => {
+          this.detailWs = null;
+          // If the scan is still running, fall back to polling
+          if (this.detailScan && this.detailScan.status === 'running' && this.currentView === 'detail') {
+            this.startDetailPolling(scanId);
+          }
+        };
+
+        ws.onerror = () => {
+          try { ws.close(); } catch (e) {}
+          this.detailWs = null;
+          // Fall back to polling
+          if (this.currentView === 'detail') {
+            this.startDetailPolling(scanId);
+          }
+        };
+
+        this.detailWs = ws;
+      } catch (e) {
+        // WebSocket not available — polling will handle it
+        this.startDetailPolling(scanId);
+      }
+    },
+
+    handleDetailMessage(msg) {
+      const phaseOrder = ['fetching', 'checking', 'files', 'scoring'];
+
+      switch (msg.type) {
+        case 'phase':
+          this.detailCurrentPhase = msg.phase || msg.label;
+          const phases = { fetching: 10, checking: 40, files: 70, scoring: 90 };
+          if (phases[msg.phase]) {
+            this.detailStats.progress_pct = phases[msg.phase];
+          }
+          break;
+
+        case 'item_start':
+          // Mark previous active items as pending (in case we missed item_done)
+          // Then add or mark this item as active
+          {
+            const existing = this.detailItems.find(i => i.title === msg.title);
+            if (existing) {
+              existing.status = 'active';
+            } else {
+              this.detailItems.push({
+                id: msg.id || msg.title,
+                title: msg.title || msg.name || 'Item',
+                status: 'active',
+                issues: null,
+              });
+            }
+            // Mark all other items as no longer active (only one active at a time)
+            this.detailItems.forEach(i => {
+              if (i.title !== msg.title && i.status === 'active') {
+                // Leave them as active — the item_done will handle transition
+              }
+            });
+            this.scrollFeedToActive();
+          }
+          break;
+
+        case 'item_found':
+          // An item discovered during fetching phase
+          {
+            const exists = this.detailItems.find(i => i.title === (msg.title || msg.label));
+            if (!exists) {
+              this.detailItems.push({
+                id: msg.id || msg.title || msg.label,
+                title: msg.title || msg.label || 'Item',
+                status: 'pending',
+                issues: null,
+              });
+            }
+            this.detailStats.items_total = msg.total || this.detailItems.length;
+          }
+          break;
+
+        case 'item_done':
+        case 'item_checked':
+          {
+            const item = this.detailItems.find(i => i.title === msg.title);
+            if (item) {
+              item.status = 'done';
+              item.issues = msg.issues || 0;
+            } else {
+              this.detailItems.push({
+                id: msg.id || msg.title,
+                title: msg.title || 'Item',
+                status: 'done',
+                issues: msg.issues || 0,
+              });
+            }
+            this.detailStats.items_done = msg.checked || (this.detailItems.filter(i => i.status === 'done').length);
+            this.detailStats.items_total = msg.total || this.detailStats.items_total || this.detailItems.length;
+            this.detailStats.issues = (this.detailStats.issues || 0) + (msg.issues || 0);
+            if (msg.total > 0) {
+              this.detailStats.progress_pct = 40 + (msg.checked / msg.total) * 30;
+            }
+          }
+          break;
+
+        case 'file_start':
+          {
+            const exists = this.detailItems.find(i => i.title === msg.name);
+            if (exists) {
+              exists.status = 'active';
+            } else {
+              this.detailItems.push({
+                id: msg.id || msg.name,
+                title: msg.name || 'File',
+                status: 'active',
+                issues: null,
+              });
+            }
+            this.scrollFeedToActive();
+          }
+          break;
+
+        case 'file_checked':
+        case 'file_done':
+          {
+            const item = this.detailItems.find(i => i.title === msg.name);
+            if (item) {
+              item.status = 'done';
+              item.issues = msg.issues || 0;
+            } else {
+              this.detailItems.push({
+                id: msg.id || msg.name,
+                title: msg.name || 'File',
+                status: 'done',
+                issues: msg.issues || 0,
+              });
+            }
+            this.detailStats.files_done = (this.detailStats.files_done || 0) + 1;
+            this.detailStats.files_total = msg.total || this.detailStats.files_total || this.detailStats.files_done;
+          }
+          break;
+
+        case 'stats':
+          // Direct stats update from server
+          if (msg.items_done != null) this.detailStats.items_done = msg.items_done;
+          if (msg.items_total != null) this.detailStats.items_total = msg.items_total;
+          if (msg.issues != null) this.detailStats.issues = msg.issues;
+          if (msg.files_done != null) this.detailStats.files_done = msg.files_done;
+          if (msg.files_total != null) this.detailStats.files_total = msg.files_total;
+          if (msg.progress_pct != null) this.detailStats.progress_pct = msg.progress_pct;
+          break;
+
+        case 'complete':
+          this.detailCurrentPhase = 'complete';
+          this.detailStats.progress_pct = 100;
+          if (this.detailScan) this.detailScan.status = 'complete';
+          // Load full results
+          this.loadScanResult(this.selectedScanId);
+          // Refresh dashboard data in the background
+          this.loadScans();
+          break;
+
+        case 'error':
+          this.detailCurrentPhase = 'error';
+          if (this.detailScan) {
+            this.detailScan.status = 'failed';
+            this.detailScan.error = msg.message || 'Unknown error';
+          }
+          this.loadScans();
+          break;
+      }
+    },
+
+    scrollFeedToActive() {
+      this.$nextTick(() => {
+        const feed = this.$refs.liveFeed;
+        if (!feed) return;
+        const activeItems = feed.querySelectorAll('.feed-item.active');
+        if (activeItems.length > 0) {
+          activeItems[activeItems.length - 1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    },
+
+    async loadScanResult(scanId) {
+      try {
+        const resp = await fetchWithAuth(`/api/scans/${scanId}`);
+        if (resp.ok) {
+          const data = await resp.json();
+          this.detailScan = data;
+          this.result = data.result_json || data.result || null;
+        }
+      } catch (e) {
+        // Will retry on next poll
+      }
+    },
+
+    startDetailPolling(scanId) {
+      this.stopDetailPolling();
+      this.detailPollTimer = setInterval(async () => {
+        if (this.currentView !== 'detail') {
+          this.stopDetailPolling();
+          return;
+        }
+        try {
+          const resp = await fetchWithAuth(`/api/scans/${scanId}`);
+          if (resp.ok) {
+            const data = await resp.json();
+            this.detailScan = data;
+            if (data.status === 'running' && !this.detailWs) {
+              // Scan started running — try WebSocket again
+              this.stopDetailPolling();
+              this.detailCurrentPhase = data.current_phase || data.phase || 'fetching';
+              this.openDetailWs(scanId);
+            } else if (data.status === 'complete') {
+              this.stopDetailPolling();
+              this.detailCurrentPhase = 'complete';
+              this.detailStats.progress_pct = 100;
+              this.result = data.result_json || data.result || null;
+              this.loadScans();
+            } else if (data.status === 'failed') {
+              this.stopDetailPolling();
+              this.detailCurrentPhase = 'error';
+            }
+          }
+        } catch (e) {
+          // Keep polling
+        }
+      }, 2000);
+    },
+
+    stopDetailPolling() {
+      if (this.detailPollTimer) {
+        clearInterval(this.detailPollTimer);
+        this.detailPollTimer = null;
+      }
+    },
+
+    closeDetailWs() {
+      this.stopDetailPolling();
+      if (this.detailWs) {
+        try { this.detailWs.close(); } catch (e) {}
+        this.detailWs = null;
+      }
+    },
+
+    closeDetailView() {
+      this.closeDetailWs();
+      this.detailScan = null;
+      this.detailItems = [];
+      this.detailStats = { items_done: 0, items_total: 0, issues: 0, files_done: 0, files_total: 0, progress_pct: 0 };
+      this.detailCurrentPhase = null;
+      this.result = null;
+      this.selectedScanId = null;
+      this.navigateTo('dashboard');
+    },
+
+    detailPhaseState(phaseKey) {
+      const order = ['fetching', 'checking', 'files', 'scoring'];
+      const currentIdx = order.indexOf(this.detailCurrentPhase);
+      const phaseIdx = order.indexOf(phaseKey);
+
+      if (this.detailCurrentPhase === 'complete') return 'done';
+      if (this.detailCurrentPhase === 'error') {
+        if (phaseIdx < currentIdx || currentIdx === -1) return 'done';
+        if (phaseIdx === currentIdx) return 'error';
+        return 'pending';
+      }
+      if (currentIdx === -1) return 'pending';
+      if (phaseIdx < currentIdx) return 'done';
+      if (phaseIdx === currentIdx) return 'active';
+      return 'pending';
+    },
+
+    async cancelDetailScan() {
+      if (!this.selectedScanId) return;
+      if (!confirm('Cancel this scan? This cannot be undone.')) return;
+      try {
+        await fetchWithAuth(`/api/scans/${this.selectedScanId}`, { method: 'DELETE' });
+        this.closeDetailView();
+      } catch (e) {
+        // ignore
+      }
+    },
+
+    downloadReport() {
+      if (!this.result) return;
+      const report = {
+        scan_id: this.selectedScanId,
+        course_name: this.detailScan?.course_name || 'Unknown',
+        overall_score: this.result.overall_score,
+        total_issues: this.allIssues().length,
+        content_items: this.result.content_items || [],
+        file_items: this.result.file_items || [],
+        issues: this.allIssues(),
+        generated_at: new Date().toISOString(),
+      };
+      const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `a11yscope-report-${this.selectedScanId || 'scan'}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
     },
 
     // ─── Relative time formatting ────────────────────────────

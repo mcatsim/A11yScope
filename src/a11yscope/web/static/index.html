@@ -369,6 +369,197 @@
 
         .hidden { display: none; }
 
+        /* ── Phase Stepper ───────────────────────────────────── */
+        .phase-stepper {
+            display: flex;
+            align-items: flex-start;
+            gap: 0;
+            margin-bottom: 1.5rem;
+        }
+        .phase-step {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            text-align: center;
+        }
+        .phase-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: calc(50% + 18px);
+            width: calc(100% - 36px);
+            height: 2px;
+            background: var(--border);
+        }
+        .phase-step.done:not(:last-child)::after {
+            background: var(--pass);
+        }
+        .phase-step.active:not(:last-child)::after {
+            background: linear-gradient(90deg, var(--primary), var(--border));
+        }
+        .phase-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .9rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0;
+        }
+        .phase-step.pending .phase-icon {
+            background: #f1f5f9;
+            color: var(--muted);
+            border: 2px solid var(--border);
+        }
+        .phase-step.active .phase-icon {
+            background: #dbeafe;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .phase-step.done .phase-icon {
+            background: var(--pass-bg);
+            color: var(--pass);
+            border: 2px solid var(--pass);
+        }
+        .phase-step.error .phase-icon {
+            background: var(--fail-bg);
+            color: var(--fail);
+            border: 2px solid var(--fail);
+        }
+        .phase-label {
+            margin-top: .4rem;
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: var(--muted);
+        }
+        .phase-step.active .phase-label { color: var(--primary); }
+        .phase-step.done .phase-label { color: var(--pass); }
+        .phase-step.error .phase-label { color: var(--fail); }
+
+        /* ── Spinner inside phase step ───────────────────────── */
+        .phase-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+        }
+
+        /* ── Live Feed ───────────────────────────────────────── */
+        .live-feed {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #fafbfc;
+        }
+        .feed-item {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            padding: .55rem 1rem;
+            font-size: .88rem;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background .15s;
+        }
+        .feed-item:last-child { border-bottom: none; }
+        .feed-item.active {
+            background: #eff6ff;
+        }
+        .feed-icon {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .feed-icon.done { color: var(--pass); }
+        .feed-icon.active { color: var(--primary); }
+        .feed-icon.pending { color: var(--muted); opacity: .5; }
+        .feed-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .feed-issues {
+            font-size: .78rem;
+            font-weight: 600;
+            color: var(--warn);
+            white-space: nowrap;
+        }
+        .feed-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+        }
+
+        /* ── Running Stats Bar ───────────────────────────────── */
+        .stats-bar {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: .75rem 1rem;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: .88rem;
+        }
+        .stats-bar-item {
+            display: flex;
+            align-items: center;
+            gap: .35rem;
+        }
+        .stats-bar-item .sbl {
+            color: var(--muted);
+            font-size: .78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+        }
+        .stats-bar-item .sbv {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        /* ── Results section ─────────────────────────────────── */
+        .results-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        .results-summary {
+            flex: 1;
+            min-width: 200px;
+        }
+        .results-summary h3 {
+            font-size: 1.15rem;
+            margin: 0 0 .25rem 0;
+        }
+        .results-summary p {
+            color: var(--muted);
+            font-size: .88rem;
+            margin: 0;
+        }
+
         /* ── Active scan cards ────────────────────────────────── */
         .scan-card {
             background: #f8fafc;
@@ -828,15 +1019,287 @@
                             </div>
                         </div>
 
-                        <!-- ═══════════ Scan Detail View (placeholder) ═══════════ -->
+                        <!-- ═══════════ Scan Detail View ═══════════ -->
                         <div x-show="currentView === 'detail'">
+
+                            <!-- Back nav + title + action buttons -->
                             <div class="card">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <button class="btn btn-outline btn-sm" @click="navigateTo('dashboard')">Back</button>
-                                    <h3 style="font-size:1.05rem;margin:0;">Scan Detail</h3>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <button class="btn btn-outline btn-sm" @click="closeDetailView()">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                                            Back
+                                        </button>
+                                        <h3 style="font-size:1.05rem;margin:0;" x-text="detailScan?.course_name || detailScan?.label || 'Scan Detail'"></h3>
+                                        <span x-show="detailScan?.status" class="sev" :class="{
+                                            'sev-moderate': detailScan?.status === 'running',
+                                            'sev-minor': detailScan?.status === 'complete',
+                                            'sev-critical': detailScan?.status === 'failed'
+                                        }" x-text="detailScan?.status"></span>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <button x-show="detailScan?.status === 'running'" class="btn btn-danger btn-sm" @click="cancelDetailScan()">
+                                            Cancel Scan
+                                        </button>
+                                        <button x-show="detailScan?.status === 'interrupted'" class="btn btn-outline btn-sm" disabled title="Resume is not yet implemented">
+                                            Resume
+                                        </button>
+                                    </div>
                                 </div>
-                                <p class="text-muted text-sm">Scan detail view will be implemented in Task 11. Selected scan ID: <span class="mono" x-text="selectedScanId"></span></p>
                             </div>
+
+                            <!-- Loading state -->
+                            <div x-show="detailLoading" class="card" style="text-align:center;padding:3rem;">
+                                <span class="spinner"></span>
+                                <p class="text-muted text-sm mt-1">Loading scan details...</p>
+                            </div>
+
+                            <!-- Running scan view -->
+                            <template x-if="detailScan && detailScan.status !== 'complete' && !detailLoading">
+                                <div>
+                                    <!-- Phase Stepper -->
+                                    <div class="card">
+                                        <div class="phase-stepper">
+                                            <template x-for="(step, idx) in detailPhases" :key="step.key">
+                                                <div class="phase-step" :class="detailPhaseState(step.key)">
+                                                    <div class="phase-icon">
+                                                        <template x-if="detailPhaseState(step.key) === 'done'">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                                        </template>
+                                                        <template x-if="detailPhaseState(step.key) === 'active'">
+                                                            <span class="phase-spinner"></span>
+                                                        </template>
+                                                        <template x-if="detailPhaseState(step.key) === 'pending'">
+                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
+                                                        </template>
+                                                        <template x-if="detailPhaseState(step.key) === 'error'">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                                        </template>
+                                                    </div>
+                                                    <span class="phase-label" x-text="step.label"></span>
+                                                </div>
+                                            </template>
+                                        </div>
+
+                                        <!-- Progress bar -->
+                                        <div class="scan-progress-row">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" :style="'width:' + (detailStats.progress_pct || 0) + '%'"></div>
+                                            </div>
+                                            <span class="pct-label" x-text="(detailStats.progress_pct || 0).toFixed(0) + '%'"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Running Stats Bar -->
+                                    <div class="stats-bar">
+                                        <div class="stats-bar-item">
+                                            <span class="sbl">Items</span>
+                                            <span class="sbv" x-text="detailStats.items_done + '/' + detailStats.items_total"></span>
+                                        </div>
+                                        <div class="stats-bar-item">
+                                            <span class="sbl">Issues</span>
+                                            <span class="sbv" x-text="detailStats.issues"></span>
+                                        </div>
+                                        <div class="stats-bar-item">
+                                            <span class="sbl">Files</span>
+                                            <span class="sbv" x-text="detailStats.files_done + '/' + detailStats.files_total"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Live Feed -->
+                                    <div class="card">
+                                        <h4 style="font-size:.95rem;margin:0 0 .75rem 0;">Live Feed</h4>
+                                        <div x-show="detailItems.length === 0" class="text-muted text-sm" style="padding:.75rem 0;">
+                                            Waiting for scan items...
+                                        </div>
+                                        <div x-show="detailItems.length > 0" class="live-feed" x-ref="liveFeed">
+                                            <template x-for="(item, idx) in detailItems" :key="item.id || idx">
+                                                <div class="feed-item" :class="{ active: item.status === 'active' }" :x-ref="item.status === 'active' ? 'activeFeedItem' : null">
+                                                    <span class="feed-icon" :class="item.status">
+                                                        <template x-if="item.status === 'done'">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                                        </template>
+                                                        <template x-if="item.status === 'active'">
+                                                            <span class="feed-spinner"></span>
+                                                        </template>
+                                                        <template x-if="item.status === 'pending'">
+                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" opacity=".4"><circle cx="12" cy="12" r="6"/></svg>
+                                                        </template>
+                                                    </span>
+                                                    <span class="feed-name" x-text="item.title"></span>
+                                                    <span x-show="item.status === 'done' && item.issues != null" class="feed-issues" x-text="item.issues + ' issues'"></span>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <!-- Error state -->
+                            <div x-show="detailScan?.status === 'failed' && !detailLoading" class="card">
+                                <div class="empty-state" style="padding:2rem;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--fail)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px;opacity:.7;margin-bottom:1rem;">
+                                        <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+                                    </svg>
+                                    <h3>Scan Failed</h3>
+                                    <p x-text="detailScan?.error || 'An unknown error occurred during the scan.'"></p>
+                                </div>
+                            </div>
+
+                            <!-- Completed scan: results view -->
+                            <template x-if="detailScan?.status === 'complete' && result && !detailLoading">
+                                <div>
+                                    <!-- Score gauge + summary -->
+                                    <div class="card">
+                                        <div class="results-header">
+                                            <div class="score-gauge" :class="scoreClass(result.overall_score)">
+                                                <span class="val" x-text="result.overall_score != null ? result.overall_score.toFixed(1) : '—'"></span>
+                                                <span class="lbl">Score</span>
+                                            </div>
+                                            <div class="results-summary">
+                                                <h3 x-text="detailScan.course_name || 'Scan Results'"></h3>
+                                                <p x-text="'Completed ' + formatDate(detailScan.completed_at || detailScan.created_at)"></p>
+                                                <div class="stats-grid" style="margin-top:.75rem;">
+                                                    <div class="stat-box">
+                                                        <div class="sv" x-text="allIssues().length"></div>
+                                                        <div class="sl">Issues</div>
+                                                    </div>
+                                                    <div class="stat-box">
+                                                        <div class="sv" x-text="(result.content_items || []).length"></div>
+                                                        <div class="sl">Content Items</div>
+                                                    </div>
+                                                    <div class="stat-box">
+                                                        <div class="sv" x-text="(result.file_items || []).length"></div>
+                                                        <div class="sl">Files</div>
+                                                    </div>
+                                                    <div class="stat-box">
+                                                        <div class="sv" x-text="allIssues().filter(i => i.auto_fixable).length"></div>
+                                                        <div class="sl">Auto-fixable</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tabs: Issues | Content | Files -->
+                                    <div class="card" x-data="{ detailTab: 'issues' }">
+                                        <div class="tabs">
+                                            <button class="tab-btn" :class="{ active: detailTab === 'issues' }" @click="detailTab = 'issues'">
+                                                Issues <span class="text-muted text-sm" x-text="'(' + allIssues().length + ')'"></span>
+                                            </button>
+                                            <button class="tab-btn" :class="{ active: detailTab === 'content' }" @click="detailTab = 'content'">
+                                                Content <span class="text-muted text-sm" x-text="'(' + (result.content_items || []).length + ')'"></span>
+                                            </button>
+                                            <button class="tab-btn" :class="{ active: detailTab === 'files' }" @click="detailTab = 'files'">
+                                                Files <span class="text-muted text-sm" x-text="'(' + (result.file_items || []).length + ')'"></span>
+                                            </button>
+                                        </div>
+
+                                        <!-- Issues table -->
+                                        <div x-show="detailTab === 'issues'">
+                                            <div x-show="allIssues().length === 0" class="empty-state" style="padding:2rem;">
+                                                <h3>No issues found</h3>
+                                                <p>This course has a perfect accessibility score.</p>
+                                            </div>
+                                            <div x-show="allIssues().length > 0" style="overflow-x:auto;">
+                                                <table class="tbl">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Severity</th>
+                                                            <th>Issue</th>
+                                                            <th>Item</th>
+                                                            <th>Standard</th>
+                                                            <th class="tc">Fix</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <template x-for="(issue, idx) in allIssues()" :key="idx">
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="sev" :class="'sev-' + issue.severity" x-text="issue.severity"></span>
+                                                                </td>
+                                                                <td>
+                                                                    <strong x-text="issue.description || issue.check_id"></strong>
+                                                                    <div x-show="issue.selector" class="mono text-sm text-muted mt-1" x-text="issue.selector" style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                                                                </td>
+                                                                <td class="text-sm" x-text="issue._itemName || '—'"></td>
+                                                                <td class="text-sm mono" x-text="getStandards(issue)"></td>
+                                                                <td class="tc">
+                                                                    <span x-show="issue.auto_fixable" class="text-success text-sm" style="font-weight:600;">Auto</span>
+                                                                    <span x-show="!issue.auto_fixable" class="text-muted text-sm">Manual</span>
+                                                                </td>
+                                                            </tr>
+                                                        </template>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <!-- Content items table -->
+                                        <div x-show="detailTab === 'content'">
+                                            <div x-show="sortedContent().length === 0" class="empty-state" style="padding:2rem;">
+                                                <p>No content items scanned.</p>
+                                            </div>
+                                            <div x-show="sortedContent().length > 0" style="overflow-x:auto;">
+                                                <table class="tbl">
+                                                    <thead><tr><th>Title</th><th>Type</th><th class="tr">Score</th><th class="tr">Issues</th></tr></thead>
+                                                    <tbody>
+                                                        <template x-for="item in sortedContent()" :key="item.id || item.title">
+                                                            <tr>
+                                                                <td><strong x-text="item.title"></strong></td>
+                                                                <td class="text-sm text-muted" x-text="item.type || '—'"></td>
+                                                                <td class="tr">
+                                                                    <span class="score-pill" :class="scoreClass(item.score)" x-text="item.score != null ? item.score.toFixed(1) + '%' : '—'"></span>
+                                                                </td>
+                                                                <td class="tr" x-text="(item.issues || []).length"></td>
+                                                            </tr>
+                                                        </template>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <!-- Files table -->
+                                        <div x-show="detailTab === 'files'">
+                                            <div x-show="sortedFiles().length === 0" class="empty-state" style="padding:2rem;">
+                                                <p>No files scanned.</p>
+                                            </div>
+                                            <div x-show="sortedFiles().length > 0" style="overflow-x:auto;">
+                                                <table class="tbl">
+                                                    <thead><tr><th>File</th><th>Type</th><th class="tr">Score</th><th class="tr">Issues</th></tr></thead>
+                                                    <tbody>
+                                                        <template x-for="item in sortedFiles()" :key="item.id || item.display_name">
+                                                            <tr>
+                                                                <td><strong x-text="item.display_name || item.filename"></strong></td>
+                                                                <td class="text-sm text-muted" x-text="item.content_type || '—'"></td>
+                                                                <td class="tr">
+                                                                    <span class="score-pill" :class="scoreClass(item.score)" x-text="item.score != null ? item.score.toFixed(1) + '%' : '—'"></span>
+                                                                </td>
+                                                                <td class="tr" x-text="(item.issues || []).length"></td>
+                                                            </tr>
+                                                        </template>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Action buttons for completed scan -->
+                                    <div class="card">
+                                        <div class="flex items-center gap-1 flex-wrap">
+                                            <button x-show="hasFixableIssues()" class="btn btn-success btn-sm" @click="applyFixes()">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                                Auto-fix Issues (<span x-text="fixableIssues().length"></span>)
+                                            </button>
+                                            <button class="btn btn-outline btn-sm" @click="downloadReport()">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                                Download Report
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
                         </div>
 
                         <!-- ═══════════ Admin View ═══════════ -->
