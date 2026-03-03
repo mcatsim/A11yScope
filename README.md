@@ -1,8 +1,8 @@
-# Accessiflow
+# A11yScope
 
 **Open-source accessibility compliance platform for Canvas LMS**
 
-Accessiflow audits your Canvas courses for WCAG 2.1 AA, Section 508, and VPAT compliance — then helps you fix issues with AI-powered remediation suggestions.
+A11yScope audits your Canvas courses for WCAG 2.1 AA, Section 508, and VPAT compliance — then helps you fix issues with AI-powered remediation suggestions.
 
 ![License](https://img.shields.io/badge/license-AGPL--3.0-blue)
 ![Python](https://img.shields.io/badge/python-3.12%2B-blue)
@@ -10,9 +10,9 @@ Accessiflow audits your Canvas courses for WCAG 2.1 AA, Section 508, and VPAT co
 
 ---
 
-## Why Accessiflow?
+## Why A11yScope?
 
-| Feature | Blackboard Ally | UDOIT | Pope Tech | Accessiflow |
+| Feature | Blackboard Ally | UDOIT | Pope Tech | A11yScope |
 |---|---|---|---|---|
 | Price | $50K+/yr | Free (aging PHP) | Paid SaaS | **Free & open source** |
 | AI remediation | No | No | No | **Yes (BYO key)** |
@@ -29,14 +29,14 @@ Accessiflow audits your Canvas courses for WCAG 2.1 AA, Section 508, and VPAT co
 
 ```bash
 # Clone the repository
-git clone https://github.com/mcatsim/Accessiflow.git
-cd Accessiflow
+git clone https://github.com/mcatsim/A11yScope.git
+cd A11yScope
 
 # Copy and configure environment
 cp .env.example .env
 # Edit .env with your Canvas URL and API token
 
-# Start Accessiflow
+# Start A11yScope
 docker compose up --build -d
 
 # Open in browser
@@ -47,8 +47,8 @@ open http://localhost:8080
 
 ```bash
 # Clone and enter
-git clone https://github.com/mcatsim/Accessiflow.git
-cd Accessiflow
+git clone https://github.com/mcatsim/A11yScope.git
+cd A11yScope
 
 # Create virtual environment
 python3.12 -m venv .venv
@@ -62,7 +62,7 @@ cp .env.example .env
 # Edit .env with your Canvas credentials
 
 # Run
-accessiflow-web
+a11yscope-web
 # Open http://localhost:8080
 ```
 
@@ -70,7 +70,7 @@ accessiflow-web
 
 ```bash
 pip install -e ".[dev]"
-accessiflow audit --course-id 12345
+a11yscope audit --course-id 12345
 ```
 
 ---
@@ -108,7 +108,7 @@ AI features include:
 - Link text suggestions
 - Remediation guidance
 
-**AI is completely optional.** Accessiflow works fully without any AI provider configured.
+**AI is completely optional.** A11yScope works fully without any AI provider configured.
 
 ### Triple-Standard Reporting
 
@@ -127,7 +127,7 @@ AI features include:
 ## Architecture
 
 ```
-src/accessiflow/
+src/a11yscope/
 ├── ai/              # Multi-AI provider abstraction (litellm)
 ├── canvas/          # Canvas LMS API client, content fetcher/updater
 ├── checks/          # 21 pluggable accessibility checks
@@ -152,17 +152,17 @@ src/accessiflow/
 
 ## Configuration
 
-All settings use the `ACCESSIFLOW_` prefix and can be set via environment variables or `.env` file:
+All settings use the `A11YSCOPE_` prefix and can be set via environment variables or `.env` file:
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `ACCESSIFLOW_CANVAS_BASE_URL` | Yes | — | Your Canvas instance URL |
-| `ACCESSIFLOW_CANVAS_API_TOKEN` | Yes | — | Canvas API access token |
-| `ACCESSIFLOW_OUTPUT_DIR` | No | `output` | Directory for report files |
-| `ACCESSIFLOW_MAX_FILE_SIZE_MB` | No | `50` | Max file size to check |
-| `ACCESSIFLOW_AI_PROVIDER` | No | — | AI provider: anthropic, openai, google, grok |
-| `ACCESSIFLOW_AI_API_KEY` | No | — | API key for AI provider |
-| `ACCESSIFLOW_AI_MODEL` | No | — | Override default AI model |
+| `A11YSCOPE_CANVAS_BASE_URL` | Yes | — | Your Canvas instance URL |
+| `A11YSCOPE_CANVAS_API_TOKEN` | Yes | — | Canvas API access token |
+| `A11YSCOPE_OUTPUT_DIR` | No | `output` | Directory for report files |
+| `A11YSCOPE_MAX_FILE_SIZE_MB` | No | `50` | Max file size to check |
+| `A11YSCOPE_AI_PROVIDER` | No | — | AI provider: anthropic, openai, google, grok |
+| `A11YSCOPE_AI_API_KEY` | No | — | API key for AI provider |
+| `A11YSCOPE_AI_MODEL` | No | — | Override default AI model |
 
 ### Getting a Canvas API Token
 
@@ -170,7 +170,7 @@ All settings use the `ACCESSIFLOW_` prefix and can be set via environment variab
 2. Go to **Account → Settings**
 3. Scroll to **Approved Integrations**
 4. Click **+ New Access Token**
-5. Give it a name (e.g., "Accessiflow") and click **Generate Token**
+5. Give it a name (e.g., "A11yScope") and click **Generate Token**
 6. Copy the token — you won't see it again
 
 ---

@@ -17,8 +17,8 @@
 **Rationale:** Security foundation first. Every response gets hardened headers before we build any new features. This prevents CWE-79 (XSS), CWE-693 (clickjacking), and establishes CSP.
 
 **Files:**
-- Create: `src/accessiflow/web/middleware/security_headers.py`
-- Modify: `src/accessiflow/web/app.py`
+- Create: `src/a11yscope/web/middleware/security_headers.py`
+- Modify: `src/a11yscope/web/app.py`
 - Test: `tests/test_security_headers.py`
 
 **Step 1: Write the failing test**
@@ -27,7 +27,7 @@
 # tests/test_security_headers.py
 import pytest
 from httpx import AsyncClient, ASGITransport
-from accessiflow.web.app import app
+from a11yscope.web.app import app
 
 @pytest.mark.asyncio
 async def test_security_headers_present():
@@ -62,10 +62,10 @@ Expected: FAIL — headers not present
 **Step 3: Write the security headers middleware**
 
 ```python
-# src/accessiflow/web/middleware/__init__.py
+# src/a11yscope/web/middleware/__init__.py
 # (empty)
 
-# src/accessiflow/web/middleware/security_headers.py
+# src/a11yscope/web/middleware/security_headers.py
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import Response
@@ -107,10 +107,10 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 **Step 4: Register middleware in app.py**
 
-Add to `src/accessiflow/web/app.py` after the existing `RequestIDMiddleware`:
+Add to `src/a11yscope/web/app.py` after the existing `RequestIDMiddleware`:
 
 ```python
-from accessiflow.web.middleware.security_headers import SecurityHeadersMiddleware
+from a11yscope.web.middleware.security_headers import SecurityHeadersMiddleware
 app.add_middleware(SecurityHeadersMiddleware)
 ```
 
@@ -122,7 +122,7 @@ Expected: PASS
 **Step 6: Commit**
 
 ```bash
-git add src/accessiflow/web/middleware/ tests/test_security_headers.py src/accessiflow/web/app.py
+git add src/a11yscope/web/middleware/ tests/test_security_headers.py src/a11yscope/web/app.py
 git commit -m "feat: add security headers middleware (CSP, X-Frame-Options, etc.)"
 ```
 
@@ -133,7 +133,7 @@ git commit -m "feat: add security headers middleware (CSP, X-Frame-Options, etc.
 **Rationale:** Before we can store API keys, we need the encryption layer. Uses Fernet with HKDF key derivation from SECRET_KEY (key separation — CWE-312 mitigation). This is the foundation for all key storage.
 
 **Files:**
-- Create: `src/accessiflow/crypto.py`
+- Create: `src/a11yscope/crypto.py`
 - Test: `tests/test_crypto.py`
 
 **Step 1: Write the failing test**
@@ -141,7 +141,7 @@ git commit -m "feat: add security headers middleware (CSP, X-Frame-Options, etc.
 ```python
 # tests/test_crypto.py
 import pytest
-from accessiflow.crypto import encrypt_token, decrypt_token, mask_token
+from a11yscope.crypto import encrypt_token, decrypt_token, mask_token
 
 def test_encrypt_decrypt_roundtrip():
     """Encrypted token must decrypt to original value."""
@@ -181,7 +181,7 @@ Expected: FAIL — module not found
 **Step 3: Write the crypto module**
 
 ```python
-# src/accessiflow/crypto.py
+# src/a11yscope/crypto.py
 """
 Symmetric encryption for sensitive fields (Canvas API tokens).
 
@@ -196,7 +196,7 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives import hashes
 
 
-_INFO = b"accessiflow-token-encryption"
+_INFO = b"a11yscope-token-encryption"
 
 
 def _derive_key(secret: str) -> bytes:
@@ -241,7 +241,7 @@ Expected: PASS
 **Step 5: Commit**
 
 ```bash
-git add src/accessiflow/crypto.py tests/test_crypto.py
+git add src/a11yscope/crypto.py tests/test_crypto.py
 git commit -m "feat: add Fernet encryption service with HKDF key derivation"
 ```
 
@@ -252,9 +252,9 @@ git commit -m "feat: add Fernet encryption service with HKDF key derivation"
 **Rationale:** Add the three new tables (api_keys, audit_jobs, audit_job_items) to the ORM and create the Alembic migration. These tables are the persistence backbone for the entire feature.
 
 **Files:**
-- Modify: `src/accessiflow/db/models.py`
-- Create: `src/accessiflow/db/migrations/versions/002_scan_dashboard.py`
-- Modify: `src/accessiflow/audit_log/schemas.py` (new audit actions)
+- Modify: `src/a11yscope/db/models.py`
+- Create: `src/a11yscope/db/migrations/versions/002_scan_dashboard.py`
+- Modify: `src/a11yscope/audit_log/schemas.py` (new audit actions)
 - Test: `tests/test_db_models.py`
 
 **Step 1: Write the failing test**
@@ -266,7 +266,7 @@ from sqlalchemy import inspect
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
-from accessiflow.db.models import Base, ApiKey, AuditJob, AuditJobItem
+from a11yscope.db.models import Base, ApiKey, AuditJob, AuditJobItem
 
 @pytest.fixture
 async def db_session():
@@ -358,7 +358,7 @@ async def test_audit_job_items_cascade_delete(db_session):
 Run: `cd ~/Canvas-accessibility-buddy && python -m pytest tests/test_db_models.py -v`
 Expected: FAIL — models not found
 
-**Step 3: Add models to `src/accessiflow/db/models.py`**
+**Step 3: Add models to `src/a11yscope/db/models.py`**
 
 Append after existing models:
 
@@ -422,7 +422,7 @@ Add `LargeBinary` to the Column imports at top of file if not present.
 **Step 4: Create migration file**
 
 ```python
-# src/accessiflow/db/migrations/versions/002_scan_dashboard.py
+# src/a11yscope/db/migrations/versions/002_scan_dashboard.py
 """Add api_keys, audit_jobs, audit_job_items tables for scan dashboard.
 
 Revision ID: 002
@@ -497,7 +497,7 @@ def downgrade() -> None:
     op.drop_table("api_keys")
 ```
 
-**Step 5: Add new audit actions to `src/accessiflow/audit_log/schemas.py`**
+**Step 5: Add new audit actions to `src/a11yscope/audit_log/schemas.py`**
 
 Append to the `AuditAction` enum:
 
@@ -524,8 +524,8 @@ Expected: PASS
 **Step 7: Commit**
 
 ```bash
-git add src/accessiflow/db/models.py src/accessiflow/db/migrations/versions/002_scan_dashboard.py \
-        src/accessiflow/audit_log/schemas.py tests/test_db_models.py
+git add src/a11yscope/db/models.py src/a11yscope/db/migrations/versions/002_scan_dashboard.py \
+        src/a11yscope/audit_log/schemas.py tests/test_db_models.py
 git commit -m "feat: add api_keys, audit_jobs, audit_job_items models and migration"
 ```
 
@@ -536,14 +536,14 @@ git commit -m "feat: add api_keys, audit_jobs, audit_job_items models and migrat
 **Rationale:** Canvas content titles are user-generated and could contain HTML/scripts. Server-side sanitization prevents stored XSS (CWE-79). This utility is used everywhere we persist Canvas-sourced strings.
 
 **Files:**
-- Create: `src/accessiflow/sanitize.py`
+- Create: `src/a11yscope/sanitize.py`
 - Test: `tests/test_sanitize.py`
 
 **Step 1: Write the failing test**
 
 ```python
 # tests/test_sanitize.py
-from accessiflow.sanitize import sanitize_title
+from a11yscope.sanitize import sanitize_title
 
 def test_strips_html_tags():
     assert sanitize_title("<b>Bold</b> text") == "Bold text"
@@ -576,7 +576,7 @@ Expected: FAIL
 **Step 3: Write the sanitization module**
 
 ```python
-# src/accessiflow/sanitize.py
+# src/a11yscope/sanitize.py
 """Input sanitization for Canvas-sourced strings.
 
 All content titles from Canvas are user-generated and must be
@@ -612,7 +612,7 @@ Expected: PASS
 **Step 5: Commit**
 
 ```bash
-git add src/accessiflow/sanitize.py tests/test_sanitize.py
+git add src/a11yscope/sanitize.py tests/test_sanitize.py
 git commit -m "feat: add input sanitization for Canvas-sourced strings (CWE-79)"
 ```
 
@@ -623,8 +623,8 @@ git commit -m "feat: add input sanitization for Canvas-sourced strings (CWE-79)"
 **Rationale:** Users need to save, list, and delete Canvas API keys before they can start scans. Keys are encrypted at rest, never returned in plaintext, and scoped to the authenticated user.
 
 **Files:**
-- Create: `src/accessiflow/web/api/key_routes.py`
-- Modify: `src/accessiflow/web/app.py` (register router)
+- Create: `src/a11yscope/web/api/key_routes.py`
+- Modify: `src/a11yscope/web/app.py` (register router)
 - Test: `tests/test_key_routes.py`
 
 **Step 1: Write the failing test**
@@ -634,8 +634,8 @@ git commit -m "feat: add input sanitization for Canvas-sourced strings (CWE-79)"
 import pytest
 from unittest.mock import patch, AsyncMock
 from httpx import AsyncClient, ASGITransport
-from accessiflow.web.app import app
-from accessiflow.auth.backend import AuthUser
+from a11yscope.web.app import app
+from a11yscope.auth.backend import AuthUser
 
 MOCK_USER = AuthUser(
     id="user-1", email="test@test.com",
@@ -645,7 +645,7 @@ MOCK_USER = AuthUser(
 @pytest.fixture
 def auth_override():
     """Override auth to return a mock user."""
-    from accessiflow.auth.dependencies import get_current_user
+    from a11yscope.auth.dependencies import get_current_user
     app.dependency_overrides[get_current_user] = lambda: MOCK_USER
     yield
     app.dependency_overrides.clear()
@@ -715,7 +715,7 @@ Expected: FAIL
 **Step 3: Write the key routes**
 
 ```python
-# src/accessiflow/web/api/key_routes.py
+# src/a11yscope/web/api/key_routes.py
 """API key management routes.
 
 Canvas API tokens are Fernet-encrypted at rest and never
@@ -731,14 +731,14 @@ from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from accessiflow.auth.backend import AuthUser
-from accessiflow.auth.dependencies import get_current_user
-from accessiflow.audit_log.logger import AuditLogger, get_audit_logger
-from accessiflow.audit_log.schemas import AuditAction
-from accessiflow.config import get_settings
-from accessiflow.crypto import encrypt_token, mask_token
-from accessiflow.db.models import ApiKey
-from accessiflow.db.session import get_db
+from a11yscope.auth.backend import AuthUser
+from a11yscope.auth.dependencies import get_current_user
+from a11yscope.audit_log.logger import AuditLogger, get_audit_logger
+from a11yscope.audit_log.schemas import AuditAction
+from a11yscope.config import get_settings
+from a11yscope.crypto import encrypt_token, mask_token
+from a11yscope.db.models import ApiKey
+from a11yscope.db.session import get_db
 
 logger = logging.getLogger(__name__)
 
@@ -859,10 +859,10 @@ async def delete_key(
 
 **Step 4: Register in app.py**
 
-Add to `src/accessiflow/web/app.py`:
+Add to `src/a11yscope/web/app.py`:
 
 ```python
-from accessiflow.web.api.key_routes import router as key_router
+from a11yscope.web.api.key_routes import router as key_router
 app.include_router(key_router, prefix="/api")
 ```
 
@@ -874,7 +874,7 @@ Expected: PASS
 **Step 6: Commit**
 
 ```bash
-git add src/accessiflow/web/api/key_routes.py src/accessiflow/web/app.py tests/test_key_routes.py
+git add src/a11yscope/web/api/key_routes.py src/a11yscope/web/app.py tests/test_key_routes.py
 git commit -m "feat: add API key management routes with Fernet encryption"
 ```
 
@@ -885,7 +885,7 @@ git commit -m "feat: add API key management routes with Fernet encryption"
 **Rationale:** Core engine that manages scan execution — sequential per API key, parallel across keys, with DB persistence. This replaces the ad-hoc `asyncio.create_task()` approach.
 
 **Files:**
-- Create: `src/accessiflow/web/queue_manager.py`
+- Create: `src/a11yscope/web/queue_manager.py`
 - Test: `tests/test_queue_manager.py`
 
 **Step 1: Write the failing test**
@@ -895,7 +895,7 @@ git commit -m "feat: add API key management routes with Fernet encryption"
 import pytest
 import asyncio
 from unittest.mock import AsyncMock, patch, MagicMock
-from accessiflow.web.queue_manager import ScanQueueManager
+from a11yscope.web.queue_manager import ScanQueueManager
 
 @pytest.fixture
 def manager():
@@ -963,7 +963,7 @@ Expected: FAIL
 **Step 3: Write the queue manager**
 
 ```python
-# src/accessiflow/web/queue_manager.py
+# src/a11yscope/web/queue_manager.py
 """Scan queue manager — sequential per API key, parallel across keys.
 
 Each API key gets its own asyncio worker coroutine. Jobs for the same
@@ -1127,7 +1127,7 @@ Expected: PASS
 **Step 5: Commit**
 
 ```bash
-git add src/accessiflow/web/queue_manager.py tests/test_queue_manager.py
+git add src/a11yscope/web/queue_manager.py tests/test_queue_manager.py
 git commit -m "feat: add ScanQueueManager with per-key sequential processing"
 ```
 
@@ -1138,8 +1138,8 @@ git commit -m "feat: add ScanQueueManager with per-key sequential processing"
 **Rationale:** REST endpoints for creating, listing, cancelling, and resuming scans. These are the API surface the frontend will call.
 
 **Files:**
-- Create: `src/accessiflow/web/api/scan_routes.py`
-- Modify: `src/accessiflow/web/app.py` (register router + queue manager lifecycle)
+- Create: `src/a11yscope/web/api/scan_routes.py`
+- Modify: `src/a11yscope/web/app.py` (register router + queue manager lifecycle)
 - Test: `tests/test_scan_routes.py`
 
 **Step 1: Write the failing test**
@@ -1148,14 +1148,14 @@ git commit -m "feat: add ScanQueueManager with per-key sequential processing"
 # tests/test_scan_routes.py
 import pytest
 from httpx import AsyncClient, ASGITransport
-from accessiflow.web.app import app
-from accessiflow.auth.backend import AuthUser
+from a11yscope.web.app import app
+from a11yscope.auth.backend import AuthUser
 
 MOCK_USER = AuthUser(id="u1", email="t@t.com", display_name="T", role="auditor")
 
 @pytest.fixture
 def auth_override():
-    from accessiflow.auth.dependencies import get_current_user
+    from a11yscope.auth.dependencies import get_current_user
     app.dependency_overrides[get_current_user] = lambda: MOCK_USER
     yield
     app.dependency_overrides.clear()
@@ -1206,7 +1206,7 @@ Expected: FAIL
 **Step 3: Write the scan routes**
 
 ```python
-# src/accessiflow/web/api/scan_routes.py
+# src/a11yscope/web/api/scan_routes.py
 """Scan management routes — create, list, cancel, resume scans."""
 
 import logging
@@ -1216,14 +1216,14 @@ from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from accessiflow.auth.backend import AuthUser
-from accessiflow.auth.dependencies import get_current_user
-from accessiflow.audit_log.logger import AuditLogger, get_audit_logger
-from accessiflow.audit_log.schemas import AuditAction
-from accessiflow.config import get_settings
-from accessiflow.crypto import decrypt_token
-from accessiflow.db.models import ApiKey, AuditJob
-from accessiflow.db.session import get_db, get_session_factory
+from a11yscope.auth.backend import AuthUser
+from a11yscope.auth.dependencies import get_current_user
+from a11yscope.audit_log.logger import AuditLogger, get_audit_logger
+from a11yscope.audit_log.schemas import AuditAction
+from a11yscope.config import get_settings
+from a11yscope.crypto import decrypt_token
+from a11yscope.db.models import ApiKey, AuditJob
+from a11yscope.db.session import get_db, get_session_factory
 
 logger = logging.getLogger(__name__)
 
@@ -1366,19 +1366,19 @@ async def cancel_scan(
 
 **Step 4: Register router and queue manager in app.py**
 
-Add to `src/accessiflow/web/app.py`:
+Add to `src/a11yscope/web/app.py`:
 
 In the lifespan function, after `seed_admin`:
 ```python
-    from accessiflow.web.queue_manager import ScanQueueManager
-    from accessiflow.web.api.scan_routes import set_queue_manager
+    from a11yscope.web.queue_manager import ScanQueueManager
+    from a11yscope.web.api.scan_routes import set_queue_manager
     queue_manager = ScanQueueManager()
     set_queue_manager(queue_manager)
 ```
 
 And register the router:
 ```python
-from accessiflow.web.api.scan_routes import router as scan_router
+from a11yscope.web.api.scan_routes import router as scan_router
 app.include_router(scan_router, prefix="/api")
 ```
 
@@ -1390,7 +1390,7 @@ Expected: PASS
 **Step 6: Commit**
 
 ```bash
-git add src/accessiflow/web/api/scan_routes.py src/accessiflow/web/app.py tests/test_scan_routes.py
+git add src/a11yscope/web/api/scan_routes.py src/a11yscope/web/app.py tests/test_scan_routes.py
 git commit -m "feat: add scan CRUD routes with queue integration"
 ```
 
@@ -1401,8 +1401,8 @@ git commit -m "feat: add scan CRUD routes with queue integration"
 **Rationale:** Move from query-param auth to first-message auth (CWE-598 fix). Add item-level message types for the live feed. Support reconnection replay.
 
 **Files:**
-- Create: `src/accessiflow/web/api/scan_ws.py` (new WS endpoint)
-- Modify: `src/accessiflow/web/app.py` (register)
+- Create: `src/a11yscope/web/api/scan_ws.py` (new WS endpoint)
+- Modify: `src/a11yscope/web/app.py` (register)
 - Test: `tests/test_scan_ws.py`
 
 **Step 1: Write the failing test**
@@ -1414,8 +1414,8 @@ import asyncio
 from unittest.mock import patch
 from httpx import ASGITransport
 from starlette.testclient import TestClient
-from accessiflow.web.app import app
-from accessiflow.web.queue_manager import QueuedJob
+from a11yscope.web.app import app
+from a11yscope.web.queue_manager import QueuedJob
 
 def test_ws_rejects_without_auth():
     """WebSocket must reject connections with no auth message."""
@@ -1438,7 +1438,7 @@ def test_ws_accepts_valid_auth():
 **Step 2: Write the new WebSocket endpoint**
 
 ```python
-# src/accessiflow/web/api/scan_ws.py
+# src/a11yscope/web/api/scan_ws.py
 """WebSocket endpoint for scan progress streaming.
 
 Auth is via first message (not URL query param) to prevent
@@ -1450,9 +1450,9 @@ import logging
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from accessiflow.auth.jwt import decode_access_token
-from accessiflow.config import get_settings
-from accessiflow.web.api.scan_routes import get_queue_manager
+from a11yscope.auth.jwt import decode_access_token
+from a11yscope.config import get_settings
+from a11yscope.web.api.scan_routes import get_queue_manager
 
 logger = logging.getLogger(__name__)
 
@@ -1537,7 +1537,7 @@ async def scan_ws(websocket: WebSocket, job_id: str):
 **Step 3: Register in app.py**
 
 ```python
-from accessiflow.web.api.scan_ws import router as scan_ws_router
+from a11yscope.web.api.scan_ws import router as scan_ws_router
 app.include_router(scan_ws_router)
 ```
 
@@ -1548,7 +1548,7 @@ Run: `cd ~/Canvas-accessibility-buddy && python -m pytest tests/test_scan_ws.py 
 **Step 5: Commit**
 
 ```bash
-git add src/accessiflow/web/api/scan_ws.py src/accessiflow/web/app.py tests/test_scan_ws.py
+git add src/a11yscope/web/api/scan_ws.py src/a11yscope/web/app.py tests/test_scan_ws.py
 git commit -m "feat: add WebSocket endpoint with first-message auth (CWE-598)"
 ```
 
@@ -1559,8 +1559,8 @@ git commit -m "feat: add WebSocket endpoint with first-message auth (CWE-598)"
 **Rationale:** Replace the wizard-based SPA with the dashboard layout. This task builds the shell (sidebar nav, view routing, header) without scan functionality — just the skeleton.
 
 **Files:**
-- Modify: `src/accessiflow/web/static/index.html` (new layout)
-- Modify: `src/accessiflow/web/static/app.js` (dashboard Alpine.js app)
+- Modify: `src/a11yscope/web/static/index.html` (new layout)
+- Modify: `src/a11yscope/web/static/app.js` (dashboard Alpine.js app)
 
 **Step 1: Implement the dashboard HTML shell**
 
@@ -1589,7 +1589,7 @@ Rewrite `app.js` with a new `dashboardApp()` function:
 Start with just the sidebar + dashboard view showing placeholder text. Wire up the view switching. Verify navigation works by running the app locally:
 
 ```bash
-cd ~/Canvas-accessibility-buddy && python -m accessiflow
+cd ~/Canvas-accessibility-buddy && python -m a11yscope
 ```
 
 Open `http://localhost:8080` and verify sidebar nav switches views.
@@ -1597,7 +1597,7 @@ Open `http://localhost:8080` and verify sidebar nav switches views.
 **Step 4: Commit**
 
 ```bash
-git add src/accessiflow/web/static/index.html src/accessiflow/web/static/app.js
+git add src/a11yscope/web/static/index.html src/a11yscope/web/static/app.js
 git commit -m "feat: replace wizard UI with dashboard shell and sidebar navigation"
 ```
 
@@ -1608,8 +1608,8 @@ git commit -m "feat: replace wizard UI with dashboard shell and sidebar navigati
 **Rationale:** Populate the dashboard with live data from the `/api/scans` and `/api/keys` endpoints.
 
 **Files:**
-- Modify: `src/accessiflow/web/static/app.js`
-- Modify: `src/accessiflow/web/static/index.html`
+- Modify: `src/a11yscope/web/static/app.js`
+- Modify: `src/a11yscope/web/static/index.html`
 
 **Step 1: Active Scans section**
 
@@ -1637,7 +1637,7 @@ git commit -m "feat: replace wizard UI with dashboard shell and sidebar navigati
 **Step 5: Commit**
 
 ```bash
-git add src/accessiflow/web/static/app.js src/accessiflow/web/static/index.html
+git add src/a11yscope/web/static/app.js src/a11yscope/web/static/index.html
 git commit -m "feat: add dashboard content — active scans, queue, recent completions"
 ```
 
@@ -1648,8 +1648,8 @@ git commit -m "feat: add dashboard content — active scans, queue, recent compl
 **Rationale:** The drill-down view when clicking an active or completed scan. Shows phase stepper, live feed, running stats.
 
 **Files:**
-- Modify: `src/accessiflow/web/static/app.js`
-- Modify: `src/accessiflow/web/static/index.html`
+- Modify: `src/a11yscope/web/static/app.js`
+- Modify: `src/a11yscope/web/static/index.html`
 
 **Step 1: Phase stepper**
 
@@ -1678,7 +1678,7 @@ git commit -m "feat: add dashboard content — active scans, queue, recent compl
 **Step 5: Commit**
 
 ```bash
-git add src/accessiflow/web/static/app.js src/accessiflow/web/static/index.html
+git add src/a11yscope/web/static/app.js src/a11yscope/web/static/index.html
 git commit -m "feat: add scan detail view with live feed and phase stepper"
 ```
 
@@ -1689,8 +1689,8 @@ git commit -m "feat: add scan detail view with live feed and phase stepper"
 **Rationale:** The modal for starting new scans and the keys management view.
 
 **Files:**
-- Modify: `src/accessiflow/web/static/app.js`
-- Modify: `src/accessiflow/web/static/index.html`
+- Modify: `src/a11yscope/web/static/app.js`
+- Modify: `src/a11yscope/web/static/index.html`
 
 **Step 1: New Scan modal**
 
@@ -1712,7 +1712,7 @@ git commit -m "feat: add scan detail view with live feed and phase stepper"
 
 **Step 3: Courses endpoint**
 
-Add to `src/accessiflow/web/api/key_routes.py`:
+Add to `src/a11yscope/web/api/key_routes.py`:
 
 ```python
 @router.get("/keys/{key_id}/courses")
@@ -1732,7 +1732,7 @@ async def list_courses_for_key(
     settings = get_settings()
     token = decrypt_token(key.encrypted_token, settings.effective_secret_key)
 
-    from accessiflow.canvas.client import CanvasClient
+    from a11yscope.canvas.client import CanvasClient
     async with CanvasClient(key.canvas_url, token) as client:
         courses = await client.get_courses()
 
@@ -1747,7 +1747,7 @@ async def list_courses_for_key(
 **Step 4: Commit**
 
 ```bash
-git add src/accessiflow/web/static/ src/accessiflow/web/api/key_routes.py
+git add src/a11yscope/web/static/ src/a11yscope/web/api/key_routes.py
 git commit -m "feat: add new scan modal, API keys view, and courses endpoint"
 ```
 
@@ -1758,8 +1758,8 @@ git commit -m "feat: add new scan modal, API keys view, and courses endpoint"
 **Rationale:** Connect the ScanQueueManager to the actual audit_runner so scans execute with item-level progress, DB persistence, and checkpointing.
 
 **Files:**
-- Modify: `src/accessiflow/web/queue_manager.py` (implement `_execute_job`)
-- Modify: `src/accessiflow/web/audit_runner.py` (add item-level callbacks)
+- Modify: `src/a11yscope/web/queue_manager.py` (implement `_execute_job`)
+- Modify: `src/a11yscope/web/audit_runner.py` (add item-level callbacks)
 - Test: `tests/test_queue_execution.py`
 
 **Step 1: Update audit_runner to emit item-level messages**
@@ -1793,7 +1793,7 @@ After each `item_done`, update `audit_jobs.checkpoint_json`:
 **Step 5: Commit**
 
 ```bash
-git add src/accessiflow/web/queue_manager.py src/accessiflow/web/audit_runner.py tests/test_queue_execution.py
+git add src/a11yscope/web/queue_manager.py src/a11yscope/web/audit_runner.py tests/test_queue_execution.py
 git commit -m "feat: wire queue manager to audit runner with item-level progress"
 ```
 
@@ -1804,9 +1804,9 @@ git commit -m "feat: wire queue manager to audit runner with item-level progress
 **Rationale:** The current CORS config is `allow_origins=["*"]` which is too permissive. Add rate limiting to prevent abuse (CWE-770).
 
 **Files:**
-- Modify: `src/accessiflow/web/app.py` (CORS config)
-- Create: `src/accessiflow/web/middleware/rate_limit.py`
-- Modify: `src/accessiflow/config.py` (add CORS settings)
+- Modify: `src/a11yscope/web/app.py` (CORS config)
+- Create: `src/a11yscope/web/middleware/rate_limit.py`
+- Modify: `src/a11yscope/config.py` (add CORS settings)
 - Test: `tests/test_rate_limit.py`
 
 **Step 1: Tighten CORS**
@@ -1834,8 +1834,8 @@ Simple in-memory sliding window rate limiter:
 **Step 4: Commit**
 
 ```bash
-git add src/accessiflow/web/app.py src/accessiflow/web/middleware/rate_limit.py \
-        src/accessiflow/config.py tests/test_rate_limit.py
+git add src/a11yscope/web/app.py src/a11yscope/web/middleware/rate_limit.py \
+        src/a11yscope/config.py tests/test_rate_limit.py
 git commit -m "feat: harden CORS and add rate limiting (CWE-770)"
 ```
 

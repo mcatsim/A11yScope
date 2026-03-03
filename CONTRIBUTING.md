@@ -1,4 +1,4 @@
-# Contributing to Accessiflow
+# Contributing to A11yScope
 
 Thank you for your interest in making Canvas LMS more accessible! Here's how to get involved.
 
@@ -6,8 +6,8 @@ Thank you for your interest in making Canvas LMS more accessible! Here's how to 
 
 ```bash
 # Fork and clone
-git clone https://github.com/YOUR-USERNAME/Accessiflow.git
-cd Accessiflow
+git clone https://github.com/YOUR-USERNAME/A11yScope.git
+cd A11yScope
 
 # Create virtual environment (Python 3.12+ required)
 python3.12 -m venv .venv
@@ -23,7 +23,7 @@ pytest tests/ -v
 ## Project Structure
 
 ```
-src/accessiflow/
+src/a11yscope/
 ├── ai/           # AI providers (litellm abstraction)
 ├── canvas/       # Canvas LMS API client
 ├── checks/       # Pluggable accessibility checks
@@ -37,12 +37,12 @@ src/accessiflow/
 
 ## Adding a New Accessibility Check
 
-1. **Create the check class** in `src/accessiflow/checks/`:
+1. **Create the check class** in `src/a11yscope/checks/`:
 
 ```python
-from accessiflow.checks.base import AccessibilityCheck
-from accessiflow.checks.registry import register_check
-from accessiflow.models import Severity
+from a11yscope.checks.base import AccessibilityCheck
+from a11yscope.checks.registry import register_check
+from a11yscope.models import Severity
 
 @register_check
 class MyNewCheck(AccessibilityCheck):
@@ -57,7 +57,7 @@ class MyNewCheck(AccessibilityCheck):
         return issues
 ```
 
-2. **Add standards mapping** in `src/accessiflow/standards/mapping.py`:
+2. **Add standards mapping** in `src/a11yscope/standards/mapping.py`:
 
 ```python
 "my-new-check": StandardsMapping(
@@ -92,7 +92,7 @@ class MyNewCheck(AccessibilityCheck):
 
 - Use GitHub Issues for bug reports and feature requests
 - Include Canvas LMS version, Python version, and browser (for web GUI issues)
-- For accessibility issues in Accessiflow itself, please file an issue — we eat our own dog food
+- For accessibility issues in A11yScope itself, please file an issue — we eat our own dog food
 
 ## License
 

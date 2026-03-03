@@ -43,8 +43,8 @@
 
 **Option B — Environment**: Add to `.env`:
 ```
-ACCESSIFLOW_AI_PROVIDER=anthropic
-ACCESSIFLOW_AI_API_KEY=sk-ant-...
+A11YSCOPE_AI_PROVIDER=anthropic
+A11YSCOPE_AI_API_KEY=sk-ant-...
 ```
 
 ### Step 4: Use
@@ -73,14 +73,14 @@ After running an audit, click the **AI** button on any issue to get:
 - **Manual only**: Adjust foreground/background colors to meet WCAG 1.4.3 minimum contrast ratio (4.5:1 for normal text, 3:1 for large text)
 - **Tool**: Use [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/) to verify colors
 
-## How to Add Accessiflow to CI/CD
+## How to Add A11yScope to CI/CD
 
 ```bash
 # In your CI pipeline
-pip install accessiflow
+pip install a11yscope
 
 # Run audit and export JSON
-accessiflow audit --course-id $COURSE_ID --output json --output-dir reports/
+a11yscope audit --course-id $COURSE_ID --output json --output-dir reports/
 
 # Check score threshold
 python3 -c "

@@ -2,7 +2,7 @@
 from __future__ import annotations
 import pytest
 from httpx import AsyncClient, ASGITransport
-from accessiflow.web.app import app
+from a11yscope.web.app import app
 
 
 @pytest.mark.asyncio

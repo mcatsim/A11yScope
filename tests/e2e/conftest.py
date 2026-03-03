@@ -4,7 +4,7 @@ import asyncio
 import pytest
 import httpx
 
-from accessiflow.web.app import app
+from a11yscope.web.app import app
 
 
 @pytest.fixture(scope="session")

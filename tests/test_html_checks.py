@@ -7,7 +7,7 @@ Each of the 13 HTML check classes is tested for:
 """
 import pytest
 
-from accessiflow.checks.html_checks import (
+from a11yscope.checks.html_checks import (
     AltTextMissing,
     AltTextNonDescriptive,
     HeadingHierarchy,
@@ -22,7 +22,7 @@ from accessiflow.checks.html_checks import (
     FormInputsMissingLabels,
     DeprecatedElements,
 )
-from accessiflow.models import Severity
+from a11yscope.models import Severity
 
 
 # ---------------------------------------------------------------------------
@@ -564,7 +564,7 @@ class TestAllChecksOnBadHtml:
     """Verify that the bad HTML fixture triggers issues from multiple checks."""
 
     def test_bad_html_triggers_many_checks(self, sample_html_bad):
-        from accessiflow.checks.registry import get_all_checks
+        from a11yscope.checks.registry import get_all_checks
 
         all_issues = []
         for check in get_all_checks():
@@ -590,7 +590,7 @@ class TestAllChecksOnBadHtml:
         assert expected_ids.issubset(check_ids), f"Missing check IDs: {expected_ids - check_ids}"
 
     def test_clean_html_triggers_no_issues(self, sample_html_clean):
-        from accessiflow.checks.registry import get_all_checks
+        from a11yscope.checks.registry import get_all_checks
 
         all_issues = []
         for check in get_all_checks():

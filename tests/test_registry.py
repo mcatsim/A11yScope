@@ -8,13 +8,13 @@ Covers:
 """
 import pytest
 
-from accessiflow.checks.registry import get_all_checks, get_check_by_id
-from accessiflow.checks.base import AccessibilityCheck
+from a11yscope.checks.registry import get_all_checks, get_check_by_id
+from a11yscope.checks.base import AccessibilityCheck
 
 
 # Ensure all check modules are imported (they register on import)
-import accessiflow.checks.html_checks  # noqa: F401
-import accessiflow.checks.contrast_check  # noqa: F401
+import a11yscope.checks.html_checks  # noqa: F401
+import a11yscope.checks.contrast_check  # noqa: F401
 
 
 ALL_CHECK_IDS = [

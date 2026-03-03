@@ -76,11 +76,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build Docker image
-        run: docker build -t accessiflow:scan .
+        run: docker build -t a11yscope:scan .
       - name: Run Trivy container scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: accessiflow:scan
+          image-ref: a11yscope:scan
           format: table
           severity: CRITICAL,HIGH
           exit-code: 0

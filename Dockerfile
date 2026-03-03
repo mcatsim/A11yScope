@@ -23,4 +23,4 @@ USER appuser
 VOLUME ["/app/output", "/app/data"]
 EXPOSE 8080
 
-CMD ["uvicorn", "accessiflow.web.app:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "a11yscope.web.app:app", "--host", "0.0.0.0", "--port", "8080"]

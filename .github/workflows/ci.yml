@@ -39,11 +39,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build Docker image
-        run: docker build -t accessiflow:test .
+        run: docker build -t a11yscope:test .
       - name: Smoke test — container starts
         run: |
-          docker run -d --name accessiflow-test -p 8080:8080 accessiflow:test
+          docker run -d --name a11yscope-test -p 8080:8080 a11yscope:test
           sleep 3
           curl -sf http://localhost:8080/health | grep '"ok"'
-          docker logs accessiflow-test
-          docker stop accessiflow-test
+          docker logs a11yscope-test
+          docker stop a11yscope-test

@@ -7,7 +7,7 @@ Covers:
 """
 import pytest
 
-from accessiflow.canvas.client import CanvasClient, CanvasAPIError
+from a11yscope.canvas.client import CanvasClient, CanvasAPIError
 
 
 # ---------------------------------------------------------------------------

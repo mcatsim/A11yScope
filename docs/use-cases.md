@@ -1,10 +1,10 @@
-# Accessiflow Use Cases
+# A11yScope Use Cases
 
 ## For Instructors
 
 ### "I need to make my course ADA compliant before the semester starts"
 
-1. Run Accessiflow against your course
+1. Run A11yScope against your course
 2. Focus on **Critical** and **Serious** issues first
 3. Use auto-fix for heading hierarchy and table structure
 4. Use AI suggestions for alt text on images
@@ -12,7 +12,7 @@
 
 ### "I'm adding new content and want to check it as I go"
 
-Run Accessiflow after adding new modules. The real-time progress shows you exactly which content items have issues, so you can fix them immediately.
+Run A11yScope after adding new modules. The real-time progress shows you exactly which content items have issues, so you can fix them immediately.
 
 ### "I have hundreds of images without alt text"
 
@@ -27,7 +27,7 @@ Run Accessiflow after adding new modules. The real-time progress shows you exact
 
 ### "I need to audit all courses in our department"
 
-Run Accessiflow against each course and download JSON reports. The JSON format is machine-readable and can be aggregated with a simple script:
+Run A11yScope against each course and download JSON reports. The JSON format is machine-readable and can be aggregated with a simple script:
 
 ```python
 import json, glob
@@ -60,17 +60,17 @@ The HTML report includes Section 508 provision references alongside WCAG criteri
 docker compose up --build -d
 
 # With a reverse proxy (Nginx/Caddy recommended)
-# Accessiflow runs on port 8080 by default
+# A11yScope runs on port 8080 by default
 ```
 
-For multi-user deployment, consider running behind an SSO-protected reverse proxy. Accessiflow is single-user by design (no built-in auth), so institutional SSO provides the access control layer.
+For multi-user deployment, consider running behind an SSO-protected reverse proxy. A11yScope is single-user by design (no built-in auth), so institutional SSO provides the access control layer.
 
 ### "I want to integrate this into our CI/CD pipeline"
 
 Use the CLI for automated scanning:
 
 ```bash
-accessiflow audit --course-id 12345 --output json --output-dir reports/
+a11yscope audit --course-id 12345 --output json --output-dir reports/
 ```
 
 Parse the JSON output to fail builds below a threshold:

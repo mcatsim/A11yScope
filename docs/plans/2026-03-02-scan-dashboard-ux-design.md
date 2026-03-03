@@ -6,7 +6,7 @@
 
 ## Problem Statement
 
-The current Accessiflow UI is a linear 6-step wizard that supports one scan at a time with no persistence. Users cannot queue scans, view history, resume interrupted work, or manage multiple API keys. All state is lost on server restart.
+The current A11yScope UI is a linear 6-step wizard that supports one scan at a time with no persistence. Users cannot queue scans, view history, resume interrupted work, or manage multiple API keys. All state is lost on server restart.
 
 ## Requirements
 

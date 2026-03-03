@@ -8,13 +8,13 @@ Covers:
 """
 import pytest
 
-from accessiflow.checks.contrast_check import (
+from a11yscope.checks.contrast_check import (
     parse_color,
     relative_luminance,
     contrast_ratio,
     ColorContrastCheck,
 )
-from accessiflow.models import Severity
+from a11yscope.models import Severity
 
 
 # ---------------------------------------------------------------------------

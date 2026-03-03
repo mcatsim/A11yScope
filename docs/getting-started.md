@@ -1,4 +1,4 @@
-# Getting Started with Accessiflow
+# Getting Started with A11yScope
 
 ## Prerequisites
 
@@ -12,27 +12,27 @@
 2. Click your profile picture → **Settings**
 3. Scroll down to **Approved Integrations**
 4. Click **+ New Access Token**
-5. Enter a purpose: "Accessiflow Accessibility Auditor"
+5. Enter a purpose: "A11yScope Accessibility Auditor"
 6. Leave expiration blank (or set a date)
 7. Click **Generate Token**
 8. **Copy the token immediately** — you won't see it again!
 
-> **Security note**: Your API token has the same permissions as your Canvas account. Accessiflow only reads course content and optionally writes back fixes. The token is stored locally and never sent to third parties.
+> **Security note**: Your API token has the same permissions as your Canvas account. A11yScope only reads course content and optionally writes back fixes. The token is stored locally and never sent to third parties.
 
-## Step 2: Install Accessiflow
+## Step 2: Install A11yScope
 
 ### Docker (Easiest)
 
 ```bash
-git clone https://github.com/mcatsim/Accessiflow.git
-cd Accessiflow
+git clone https://github.com/mcatsim/A11yScope.git
+cd A11yScope
 cp .env.example .env
 ```
 
 Edit `.env` and add your Canvas URL and API token:
 ```
-ACCESSIFLOW_CANVAS_BASE_URL=https://canvas.yourschool.edu
-ACCESSIFLOW_CANVAS_API_TOKEN=your-token-here
+A11YSCOPE_CANVAS_BASE_URL=https://canvas.yourschool.edu
+A11YSCOPE_CANVAS_API_TOKEN=your-token-here
 ```
 
 Start the application:
@@ -45,14 +45,14 @@ Open http://localhost:8080 in your browser.
 ### Local Installation
 
 ```bash
-git clone https://github.com/mcatsim/Accessiflow.git
-cd Accessiflow
+git clone https://github.com/mcatsim/A11yScope.git
+cd A11yScope
 python3.12 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[web,ai]"
 cp .env.example .env
 # Edit .env with your credentials
-accessiflow-web
+a11yscope-web
 ```
 
 ## Step 3: Run Your First Audit
@@ -61,7 +61,7 @@ accessiflow-web
 2. Enter your Canvas URL and API token → click **Connect**
 3. Select a course from the list
 4. Click **Audit [Course Name]**
-5. Watch the real-time progress as Accessiflow:
+5. Watch the real-time progress as A11yScope:
    - Fetches all pages, assignments, discussions, quizzes, and files
    - Runs 21 accessibility checks on HTML content
    - Checks PDFs, Word docs, and PowerPoint files
@@ -79,11 +79,11 @@ If you want AI-powered remediation suggestions:
    - [OpenAI Platform](https://platform.openai.com/) (GPT-4o)
    - [Google AI Studio](https://aistudio.google.com/) (Gemini)
    - [xAI Console](https://console.x.ai/) (Grok)
-2. In the Accessiflow web UI, expand "AI Provider (Optional)"
+2. In the A11yScope web UI, expand "AI Provider (Optional)"
 3. Select your provider, enter your API key, click **Validate Key**
 4. Click the **AI** button on any issue to get a remediation suggestion
 
-## Stopping Accessiflow
+## Stopping A11yScope
 
 ```bash
 docker compose down

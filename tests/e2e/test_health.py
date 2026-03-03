@@ -17,7 +17,7 @@ async def test_index_serves_html(client):
     resp = await client.get("/")
     assert resp.status_code == 200
     assert "text/html" in resp.headers["content-type"]
-    assert "Accessiflow" in resp.text
+    assert "A11yScope" in resp.text
 
 
 @pytest.mark.asyncio

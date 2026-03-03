@@ -2,7 +2,7 @@
 import pytest
 from datetime import datetime
 
-from accessiflow.models import (
+from a11yscope.models import (
     AccessibilityIssue,
     ContentItem,
     FileItem,

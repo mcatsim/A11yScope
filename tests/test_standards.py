@@ -1,9 +1,9 @@
 """Comprehensive tests for standards mapping modules."""
 from __future__ import annotations
 import pytest
-from accessiflow.standards.wcag21 import WCAG_CRITERIA, WCAGCriterion, get_criterion, get_criteria_by_level, get_criteria_by_principle
-from accessiflow.standards.section508 import SECTION_508_PROVISIONS, get_provision, get_provisions_for_wcag
-from accessiflow.standards.mapping import CHECK_STANDARDS_MAP, get_standards_for_check, get_checks_for_criterion
+from a11yscope.standards.wcag21 import WCAG_CRITERIA, WCAGCriterion, get_criterion, get_criteria_by_level, get_criteria_by_principle
+from a11yscope.standards.section508 import SECTION_508_PROVISIONS, get_provision, get_provisions_for_wcag
+from a11yscope.standards.mapping import CHECK_STANDARDS_MAP, get_standards_for_check, get_checks_for_criterion
 
 
 class TestWCAGCriteria:

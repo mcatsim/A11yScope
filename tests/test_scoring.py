@@ -9,7 +9,7 @@ Covers:
 import pytest
 from datetime import datetime
 
-from accessiflow.scoring.engine import (
+from a11yscope.scoring.engine import (
     score_item,
     score_content_item,
     score_file_item,
@@ -18,7 +18,7 @@ from accessiflow.scoring.engine import (
     CHECKS_PER_CONTENT,
     CHECKS_PER_FILE,
 )
-from accessiflow.models import (
+from a11yscope.models import (
     AccessibilityIssue,
     ContentItem,
     FileItem,

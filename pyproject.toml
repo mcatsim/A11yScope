@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "accessiflow"
+name = "a11yscope"
 version = "2.0.0"
-description = "Accessiflow — WCAG 2.1 AA, Section 508, and VPAT accessibility auditor for Canvas LMS"
+description = "A11yScope — WCAG 2.1 AA, Section 508, and VPAT accessibility auditor for Canvas LMS"
 license = "AGPL-3.0-only"
 authors = [{ name = "Matt Catsimanes", email = "matt@catsimanes.com" }]
 requires-python = ">=3.12"
@@ -28,8 +28,8 @@ dependencies = [
 ]
 
 [project.scripts]
-accessiflow = "accessiflow.cli:cli"
-accessiflow-web = "accessiflow.web.app:main"
+a11yscope = "a11yscope.cli:cli"
+a11yscope-web = "a11yscope.web.app:main"
 
 [project.optional-dependencies]
 web = [
@@ -79,4 +79,4 @@ exclude_dirs = ["tests"]
 skips = ["B101"]  # assert OK in tests
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/accessiflow"]
+packages = ["src/a11yscope"]

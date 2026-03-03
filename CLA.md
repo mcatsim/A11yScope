@@ -1,8 +1,8 @@
 # Contributor License Agreement (CLA)
 
-## Accessiflow — Individual Contributor License Agreement
+## A11yScope — Individual Contributor License Agreement
 
-Thank you for your interest in contributing to Accessiflow
+Thank you for your interest in contributing to A11yScope
 ("the Project"), maintained by Matt Catsimanes ("the Maintainer").
 
 By submitting a contribution (code, documentation, or other materials) to this

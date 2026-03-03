@@ -9,8 +9,8 @@ Covers:
 """
 import pytest
 
-from accessiflow.remediation.autofix import AutoFixer
-from accessiflow.models import ContentItem, ContentType, AccessibilityIssue, Severity
+from a11yscope.remediation.autofix import AutoFixer
+from a11yscope.models import ContentItem, ContentType, AccessibilityIssue, Severity
 
 
 def _make_fixable_issue(check_id: str, severity: Severity = Severity.SERIOUS) -> AccessibilityIssue:

@@ -5,12 +5,12 @@ import pytest
 from datetime import datetime
 from pathlib import Path
 
-from accessiflow.models import (
+from a11yscope.models import (
     CourseAuditResult, ContentItem, ContentType,
     AccessibilityIssue, Severity,
 )
-from accessiflow.standards.vpat import build_vpat, VPATReport, VPATRow
-from accessiflow.reporting.vpat_report import generate_vpat_report
+from a11yscope.standards.vpat import build_vpat, VPATReport, VPATRow
+from a11yscope.reporting.vpat_report import generate_vpat_report
 
 
 def _make_result(issues=None):
@@ -86,7 +86,7 @@ def test_vpat_report_generation(tmp_path):
     assert path.exists()
     content = path.read_text()
     assert "VPAT" in content
-    assert "Accessiflow" in content
+    assert "A11yScope" in content
     assert "Perceivable" in content
 
 
