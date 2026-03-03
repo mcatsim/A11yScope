@@ -18,9 +18,165 @@
             --text: #1a1a2e;
             --muted: #596678;
             --border: #e2e8f0;
+            --sidebar-w: 240px;
+            --header-h: 56px;
         }
-        body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
+        * { box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+
+        /* ── Dashboard Layout ─────────────────────────────────── */
+        .dash-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── Sidebar ──────────────────────────────────────────── */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: #1a1a2e;
+            color: #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            transition: transform .25s ease;
+        }
+        .sidebar-brand {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+        }
+        .sidebar-brand h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 0;
+            color: #fff;
+            letter-spacing: -.01em;
+        }
+        .sidebar-brand p {
+            font-size: .72rem;
+            color: #94a3b8;
+            margin: .15rem 0 0 0;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+        .sidebar-nav {
+            flex: 1;
+            padding: .75rem 0;
+            overflow-y: auto;
+        }
+        .sidebar-nav-label {
+            font-size: .68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: #64748b;
+            padding: .75rem 1.25rem .35rem;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            padding: .6rem 1.25rem;
+            font-size: .88rem;
+            font-weight: 500;
+            color: #94a3b8;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            transition: all .12s;
+            border-left: 3px solid transparent;
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,.06);
+            color: #e2e8f0;
+        }
+        .nav-item.active {
+            background: rgba(37,99,235,.15);
+            color: #60a5fa;
+            border-left-color: #60a5fa;
+        }
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            opacity: .8;
+        }
+        .nav-item.active svg { opacity: 1; }
+        .sidebar-footer {
+            padding: .75rem 1.25rem;
+            border-top: 1px solid rgba(255,255,255,.08);
+            font-size: .78rem;
+            color: #64748b;
+        }
+
+        /* ── Main Content ─────────────────────────────────────── */
+        .main-wrap {
+            flex: 1;
+            margin-left: var(--sidebar-w);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ── Header ───────────────────────────────────────────── */
+        .dash-header {
+            height: var(--header-h);
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .dash-header-left {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+        .dash-header-right {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+        .hamburger {
+            display: none;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            padding: .25rem;
+        }
+        .hamburger svg { width: 24px; height: 24px; }
+        .view-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            font-size: .82rem;
+            color: var(--muted);
+        }
+        .user-chip strong { color: var(--text); }
+
+        /* ── Content Area ─────────────────────────────────────── */
+        .dash-content {
+            flex: 1;
+            padding: 1.5rem;
+            max-width: 1200px;
+            width: 100%;
+        }
 
         /* ── Card ──────────────────────────────────────────────── */
         .card {
@@ -30,17 +186,6 @@
             padding: 1.5rem 2rem;
             margin-bottom: 1.5rem;
         }
-
-        /* ── Wizard steps bar ──────────────────────────────────── */
-        .steps { display: flex; gap: .5rem; margin-bottom: 2rem; flex-wrap: wrap; }
-        .step-pill {
-            padding: .35rem 1rem; border-radius: 999px;
-            font-size: .82rem; font-weight: 600;
-            background: var(--border); color: var(--muted);
-            cursor: default; transition: all .2s;
-        }
-        .step-pill.active { background: var(--primary); color: #fff; }
-        .step-pill.done { background: var(--pass-bg); color: var(--pass); }
 
         /* ── Forms ─────────────────────────────────────────────── */
         label { display: block; font-weight: 600; margin-bottom: .25rem; font-size: .9rem; }
@@ -136,21 +281,6 @@
         .log-entry { padding: .25rem 0; font-size: .85rem; color: var(--muted); border-bottom: 1px solid #f1f5f9; }
         .log-entry.phase { font-weight: 600; color: var(--text); }
 
-        /* ── Course card ───────────────────────────────────────── */
-        .course-card {
-            padding: 1rem 1.25rem; border: 1px solid var(--border); border-radius: 8px;
-            cursor: pointer; transition: all .15s; margin-bottom: .5rem;
-        }
-        .course-card:hover { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
-        .course-card.selected { border-color: var(--primary); background: #eff6ff; }
-        .course-card h3 { font-size: 1rem; font-weight: 600; margin: 0 0 .15rem 0; }
-        .course-card p { font-size: .82rem; color: var(--muted); margin: 0; }
-
-        /* ── Check / Fix ───────────────────────────────────────── */
-        .fix-item { padding: .75rem; border: 1px solid var(--border); border-radius: 6px; margin-bottom: .5rem; }
-        .fix-item label { display: flex; align-items: flex-start; gap: .5rem; font-weight: 400; cursor: pointer; margin: 0; }
-        .fix-item input[type="checkbox"] { margin-top: .2rem; }
-
         /* ── Tabs ──────────────────────────────────────────────── */
         .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 1.5rem; }
         .tab-btn {
@@ -160,6 +290,62 @@
         }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
         .tab-btn:hover { color: var(--text); }
+
+        /* ── Empty State ──────────────────────────────────────── */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--muted);
+        }
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            opacity: .4;
+            margin-bottom: 1rem;
+        }
+        .empty-state h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 0 0 .35rem 0;
+        }
+        .empty-state p {
+            font-size: .88rem;
+            margin: 0;
+        }
+
+        /* ── Status dot ───────────────────────────────────────── */
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: .35rem;
+        }
+        .status-dot.active { background: var(--pass); }
+        .status-dot.queued { background: var(--warn); }
+        .status-dot.failed { background: var(--fail); }
+
+        /* ── Modal overlay ────────────────────────────────────── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+        .modal-card {
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,.18);
+            padding: 2rem;
+            width: 90%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
 
         /* ── Misc ──────────────────────────────────────────────── */
         .flex { display: flex; }
@@ -183,6 +369,305 @@
 
         .hidden { display: none; }
 
+        /* ── Phase Stepper ───────────────────────────────────── */
+        .phase-stepper {
+            display: flex;
+            align-items: flex-start;
+            gap: 0;
+            margin-bottom: 1.5rem;
+        }
+        .phase-step {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            text-align: center;
+        }
+        .phase-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: calc(50% + 18px);
+            width: calc(100% - 36px);
+            height: 2px;
+            background: var(--border);
+        }
+        .phase-step.done:not(:last-child)::after {
+            background: var(--pass);
+        }
+        .phase-step.active:not(:last-child)::after {
+            background: linear-gradient(90deg, var(--primary), var(--border));
+        }
+        .phase-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .9rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0;
+        }
+        .phase-step.pending .phase-icon {
+            background: #f1f5f9;
+            color: var(--muted);
+            border: 2px solid var(--border);
+        }
+        .phase-step.active .phase-icon {
+            background: #dbeafe;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .phase-step.done .phase-icon {
+            background: var(--pass-bg);
+            color: var(--pass);
+            border: 2px solid var(--pass);
+        }
+        .phase-step.error .phase-icon {
+            background: var(--fail-bg);
+            color: var(--fail);
+            border: 2px solid var(--fail);
+        }
+        .phase-label {
+            margin-top: .4rem;
+            font-size: .75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: var(--muted);
+        }
+        .phase-step.active .phase-label { color: var(--primary); }
+        .phase-step.done .phase-label { color: var(--pass); }
+        .phase-step.error .phase-label { color: var(--fail); }
+
+        /* ── Spinner inside phase step ───────────────────────── */
+        .phase-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+        }
+
+        /* ── Live Feed ───────────────────────────────────────── */
+        .live-feed {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #fafbfc;
+        }
+        .feed-item {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            padding: .55rem 1rem;
+            font-size: .88rem;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background .15s;
+        }
+        .feed-item:last-child { border-bottom: none; }
+        .feed-item.active {
+            background: #eff6ff;
+        }
+        .feed-icon {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .feed-icon.done { color: var(--pass); }
+        .feed-icon.active { color: var(--primary); }
+        .feed-icon.pending { color: var(--muted); opacity: .5; }
+        .feed-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .feed-issues {
+            font-size: .78rem;
+            font-weight: 600;
+            color: var(--warn);
+            white-space: nowrap;
+        }
+        .feed-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+        }
+
+        /* ── Running Stats Bar ───────────────────────────────── */
+        .stats-bar {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: .75rem 1rem;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: .88rem;
+        }
+        .stats-bar-item {
+            display: flex;
+            align-items: center;
+            gap: .35rem;
+        }
+        .stats-bar-item .sbl {
+            color: var(--muted);
+            font-size: .78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+        }
+        .stats-bar-item .sbv {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        /* ── Results section ─────────────────────────────────── */
+        .results-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        .results-summary {
+            flex: 1;
+            min-width: 200px;
+        }
+        .results-summary h3 {
+            font-size: 1.15rem;
+            margin: 0 0 .25rem 0;
+        }
+        .results-summary p {
+            color: var(--muted);
+            font-size: .88rem;
+            margin: 0;
+        }
+
+        /* ── Active scan cards ────────────────────────────────── */
+        .scan-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin-top: .75rem;
+            cursor: pointer;
+            transition: box-shadow .15s, border-color .15s;
+        }
+        .scan-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(37,99,235,.1);
+        }
+        .scan-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: .5rem;
+        }
+        .scan-card-header h4 {
+            margin: 0;
+            font-size: .95rem;
+            font-weight: 600;
+        }
+        .scan-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: .82rem;
+            color: var(--muted);
+            margin-top: .5rem;
+        }
+        .scan-card-meta .issue-count {
+            font-weight: 600;
+            color: var(--warn);
+        }
+        .scan-progress-row {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+        .scan-progress-row .progress-bar {
+            flex: 1;
+        }
+        .scan-progress-row .pct-label {
+            font-size: .82rem;
+            font-weight: 600;
+            min-width: 3rem;
+            text-align: right;
+            color: var(--primary);
+        }
+
+        /* ── Queue list ───────────────────────────────────────── */
+        .queue-item {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .6rem .25rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .queue-item:last-child { border-bottom: none; }
+        .queue-pos {
+            width: 1.75rem;
+            height: 1.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--warn-bg);
+            color: var(--warn);
+            font-weight: 700;
+            font-size: .78rem;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .queue-name {
+            flex: 1;
+            font-size: .9rem;
+            font-weight: 500;
+        }
+        .btn-cancel {
+            width: 1.5rem;
+            height: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            border-radius: 4px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all .12s;
+        }
+        .btn-cancel:hover {
+            background: var(--fail-bg);
+            color: var(--fail);
+        }
+
+        /* ── Pulse animation for active dot ───────────────────── */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .4; }
+        }
+        .status-dot.active {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
         /* ── Login card ──────────────────────────────────────── */
         .login-card {
             max-width: 400px; margin: 4rem auto;
@@ -193,9 +678,35 @@
         .login-card h1 { text-align: center; font-size: 1.5rem; margin-bottom: .25rem; }
         .login-card p { text-align: center; color: var(--muted); font-size: .9rem; margin-bottom: 1.5rem; }
 
+        /* ── Sidebar overlay (mobile) ─────────────────────────── */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.4);
+            z-index: 99;
+        }
+
         /* ── Responsive ────────────────────────────────────────── */
         @media (max-width: 768px) {
-            .container { padding: 1rem .5rem; }
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.visible {
+                display: block;
+            }
+            .main-wrap {
+                margin-left: 0;
+            }
+            .hamburger {
+                display: flex;
+            }
+            .dash-content {
+                padding: 1rem;
+            }
             .card { padding: 1rem; }
             .score-gauge { width: 110px; height: 110px; }
             .score-gauge .val { font-size: 1.75rem; }
@@ -204,7 +715,7 @@
     </style>
 </head>
 <body>
-    <div class="container" x-data="auditApp()" x-init="init()">
+    <div x-data="dashboardApp()" x-init="init()">
 
         <!-- ═══════════════ Login Screen ═══════════════ -->
         <template x-if="showLogin">
@@ -255,463 +766,764 @@
             </div>
         </template>
 
-        <!-- ═══════════════ Main App ═══════════════ -->
+        <!-- ═══════════════ Dashboard Layout ═══════════════ -->
         <template x-if="!showLogin && !showChangePassword">
-            <div>
-                <!-- Header -->
-                <div class="flex items-center justify-between mb-2" style="flex-wrap:wrap;gap:1rem;">
-                    <div>
-                        <h1 style="font-size:1.5rem;font-weight:700;margin:0;">A11yScope</h1>
-                        <p class="text-muted text-sm">Canvas LMS accessibility auditor — WCAG 2.1 AA &amp; Section 508</p>
+            <div class="dash-layout">
+
+                <!-- Sidebar overlay (mobile) -->
+                <div class="sidebar-overlay" :class="{ 'visible': sidebarOpen }" @click="sidebarOpen = false"></div>
+
+                <!-- ═══════════ Sidebar ═══════════ -->
+                <nav class="sidebar" :class="{ 'open': sidebarOpen }" role="navigation" aria-label="Main navigation">
+                    <div class="sidebar-brand">
+                        <h1>A11yScope</h1>
+                        <p>Canvas LMS Auditor</p>
                     </div>
-                    <div class="flex items-center gap-1">
-                        <span x-show="displayName" class="text-sm text-muted">
-                            <strong x-text="displayName"></strong>
-                            <template x-if="authUser">
-                                <span class="role-badge" :class="'role-' + authUser.role" x-text="authUser.role"></span>
+                    <div class="sidebar-nav">
+                        <div class="sidebar-nav-label">Main</div>
+                        <button class="nav-item" :class="{ 'active': currentView === 'dashboard' }" @click="navigateTo('dashboard')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                            Dashboard
+                        </button>
+                        <button class="nav-item" :class="{ 'active': currentView === 'keys' }" @click="navigateTo('keys')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                            API Keys
+                        </button>
+                        <button class="nav-item" :class="{ 'active': currentView === 'history' }" @click="navigateTo('history')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            History
+                        </button>
+
+                        <template x-if="isAdmin">
+                            <div>
+                                <div class="sidebar-nav-label">Administration</div>
+                                <button class="nav-item" :class="{ 'active': currentView === 'admin' }" @click="navigateTo('admin')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                                    Admin
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="sidebar-footer">
+                        A11yScope v2.0
+                    </div>
+                </nav>
+
+                <!-- ═══════════ Main Content ═══════════ -->
+                <div class="main-wrap">
+
+                    <!-- Header -->
+                    <header class="dash-header">
+                        <div class="dash-header-left">
+                            <button class="hamburger" @click="sidebarOpen = !sidebarOpen" aria-label="Toggle navigation">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                            </button>
+                            <h2 class="view-title" x-text="viewTitle"></h2>
+                        </div>
+                        <div class="dash-header-right">
+                            <button class="btn btn-primary btn-sm" @click="openNewScanModal()" x-show="canAudit">
+                                + New Scan
+                            </button>
+                            <div class="user-chip" x-show="displayName">
+                                <strong x-text="displayName"></strong>
+                                <template x-if="authUser">
+                                    <span class="role-badge" :class="'role-' + authUser.role" x-text="authUser.role"></span>
+                                </template>
+                            </div>
+                            <button x-show="authMode !== 'none'" class="btn btn-ghost btn-sm" @click="logout()">Logout</button>
+                        </div>
+                    </header>
+
+                    <!-- Content area -->
+                    <main class="dash-content">
+
+                        <!-- ═══════════ Dashboard View ═══════════ -->
+                        <div x-show="currentView === 'dashboard'">
+                            <!-- Active Scans -->
+                            <div class="card">
+                                <div class="flex items-center justify-between mb-1">
+                                    <h3 style="font-size:1.05rem;margin:0;">
+                                        <span class="status-dot active"></span>
+                                        Active Scans
+                                    </h3>
+                                    <span class="text-sm text-muted" x-text="activeScans.length + ' running'"></span>
+                                </div>
+                                <div x-show="activeScans.length === 0" class="empty-state" style="padding:1.5rem;">
+                                    <p class="text-muted text-sm">No active scans. Click <strong>+ New Scan</strong> to start one.</p>
+                                </div>
+                                <template x-for="scan in activeScans" :key="scan.job_id || scan.id">
+                                    <div class="scan-card" @click="selectedScanId = scan.job_id || scan.id; navigateTo('detail')">
+                                        <div class="scan-card-header">
+                                            <h4 x-text="scan.course_name || scan.label || 'Scan'"></h4>
+                                            <span class="sev sev-moderate" x-text="scan.phase || scan.status || 'running'"></span>
+                                        </div>
+                                        <div class="scan-progress-row">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" :style="'width:' + (scan.progress_pct || 0) + '%'"></div>
+                                            </div>
+                                            <span class="pct-label" x-text="(scan.progress_pct || 0).toFixed(0) + '%'"></span>
+                                        </div>
+                                        <div class="scan-card-meta">
+                                            <span x-show="scan.current_item" x-text="scan.current_item"></span>
+                                            <span x-show="scan.total_issues != null" class="issue-count" x-text="(scan.total_issues || 0) + ' issues'"></span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- Queued Scans -->
+                            <div class="card">
+                                <div class="flex items-center justify-between mb-1">
+                                    <h3 style="font-size:1.05rem;margin:0;">
+                                        <span class="status-dot queued"></span>
+                                        Queue
+                                    </h3>
+                                    <span class="text-sm text-muted" x-text="queuedScans.length + ' waiting'"></span>
+                                </div>
+                                <div x-show="queuedScans.length === 0" class="empty-state" style="padding:1.5rem;">
+                                    <p class="text-muted text-sm">No scans queued</p>
+                                </div>
+                                <div x-show="queuedScans.length > 0">
+                                    <template x-for="(scan, idx) in queuedScans" :key="scan.job_id || scan.id">
+                                        <div class="queue-item">
+                                            <span class="queue-pos" x-text="idx + 1"></span>
+                                            <span class="queue-name" x-text="scan.course_name || scan.label || 'Scan'"></span>
+                                            <button class="btn-cancel" @click.stop="cancelScan(scan.job_id || scan.id)" title="Cancel scan" aria-label="Cancel scan">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                            </button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <!-- Recently Completed -->
+                            <div class="card">
+                                <div class="flex items-center justify-between mb-1">
+                                    <h3 style="font-size:1.05rem;margin:0;">Recently Completed</h3>
+                                    <button class="btn btn-ghost btn-sm" @click="navigateTo('history')">View All</button>
+                                </div>
+                                <div x-show="recentScans.length === 0" class="empty-state" style="padding:1.5rem;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                                    <h3>No scans yet</h3>
+                                    <p>Completed scans will appear here.</p>
+                                </div>
+                                <div x-show="recentScans.length > 0" style="overflow-x:auto;">
+                                    <table class="tbl">
+                                        <thead><tr><th>Course</th><th class="tr">Score</th><th class="tr">Issues</th><th>When</th></tr></thead>
+                                        <tbody>
+                                            <template x-for="scan in dashboardRecent" :key="scan.job_id || scan.id">
+                                                <tr style="cursor:pointer;" @click="selectedScanId = scan.job_id || scan.id; navigateTo('detail')">
+                                                    <td>
+                                                        <span x-text="scan.course_name || '—'"></span>
+                                                        <span x-show="scan.status === 'failed'" class="sev sev-critical" style="margin-left:.35rem;">failed</span>
+                                                    </td>
+                                                    <td class="tr">
+                                                        <span class="score-pill" :class="scoreClass(scan.overall_score)" x-text="scan.overall_score != null ? scan.overall_score.toFixed(1) + '%' : '—'"></span>
+                                                    </td>
+                                                    <td class="tr" x-text="scan.total_issues ?? '—'"></td>
+                                                    <td class="text-sm text-muted" x-text="timeAgo(scan.completed_at || scan.created_at)"></td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ═══════════ API Keys View ═══════════ -->
+                        <div x-show="currentView === 'keys'">
+                            <div class="card">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 style="font-size:1.05rem;margin:0;">Canvas API Keys</h3>
+                                    <button class="btn btn-primary btn-sm" @click="showAddKeyForm = !showAddKeyForm" x-text="showAddKeyForm ? 'Cancel' : '+ Add Key'"></button>
+                                </div>
+
+                                <!-- Add key form -->
+                                <div x-show="showAddKeyForm" class="card" style="background:#f8fafc;margin-bottom:1rem;">
+                                    <label for="key-name">Name</label>
+                                    <input id="key-name" type="text" x-model="newKeyLabel" placeholder="e.g., Main Canvas Instance">
+
+                                    <label for="key-url">Canvas URL</label>
+                                    <input id="key-url" type="url" x-model="newKeyUrl" placeholder="https://canvas.example.edu">
+
+                                    <label for="key-token">API Token</label>
+                                    <input id="key-token" type="password" x-model="newKeyToken" placeholder="Canvas API access token">
+
+                                    <button class="btn btn-success btn-sm" @click="addKey()" :disabled="!newKeyLabel || !newKeyUrl || !newKeyToken">
+                                        Save Key
+                                    </button>
+                                    <span x-show="keyError" class="text-danger text-sm" x-text="keyError"></span>
+                                </div>
+
+                                <div x-show="savedKeys.length === 0 && !showAddKeyForm" class="empty-state" style="padding:2rem;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                                    <h3>No API keys saved</h3>
+                                    <p>Add a Canvas API key to get started with scanning.</p>
+                                </div>
+
+                                <!-- Key cards -->
+                                <div x-show="savedKeys.length > 0">
+                                    <template x-for="key in savedKeys" :key="key.id">
+                                        <div class="scan-card" style="cursor:default;">
+                                            <div class="scan-card-header">
+                                                <h4 x-text="key.name"></h4>
+                                                <button class="btn btn-outline btn-sm" style="color:var(--fail);" @click="deleteKey(key.id)">Delete</button>
+                                            </div>
+                                            <div class="scan-card-meta" style="flex-wrap:wrap;">
+                                                <span class="mono text-sm" x-text="key.canvas_url"></span>
+                                                <span x-show="key.course_count != null" x-text="key.course_count + ' courses'"></span>
+                                                <span x-show="key.last_used_at" x-text="'Last used: ' + timeAgo(key.last_used_at)"></span>
+                                                <span class="mono text-sm" x-text="'Token: ****' + key.token_hint"></span>
+                                            </div>
+                                            <div class="text-sm text-muted mt-1" x-text="'Added ' + formatDate(key.created_at)"></div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ═══════════ History View ═══════════ -->
+                        <div x-show="currentView === 'history'">
+                            <div class="card">
+                                <h3 style="font-size:1.05rem;margin:0 0 1rem 0;">Scan History</h3>
+
+                                <div x-show="recentScans.length === 0" class="empty-state" style="padding:2rem;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    <h3>No scan history</h3>
+                                    <p>Your completed scans will appear here.</p>
+                                </div>
+
+                                <div x-show="recentScans.length > 0" style="overflow-x:auto;">
+                                    <table class="tbl">
+                                        <thead><tr><th>Course</th><th>Date</th><th class="tr">Score</th><th class="tr">Issues</th><th>Status</th></tr></thead>
+                                        <tbody>
+                                            <template x-for="scan in recentScans" :key="scan.id">
+                                                <tr style="cursor:pointer;" @click="selectedScanId = scan.id; navigateTo('detail')">
+                                                    <td x-text="scan.course_name || '—'"></td>
+                                                    <td class="text-sm text-muted" x-text="formatDate(scan.created_at)"></td>
+                                                    <td class="tr">
+                                                        <span class="score-pill" :class="scoreClass(scan.overall_score)" x-text="scan.overall_score != null ? scan.overall_score.toFixed(1) + '%' : '—'"></span>
+                                                    </td>
+                                                    <td class="tr" x-text="scan.total_issues ?? '—'"></td>
+                                                    <td>
+                                                        <span class="sev" :class="{
+                                                            'sev-minor': scan.status === 'complete',
+                                                            'sev-critical': scan.status === 'failed',
+                                                            'sev-moderate': scan.status === 'running'
+                                                        }" x-text="scan.status"></span>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ═══════════ Scan Detail View ═══════════ -->
+                        <div x-show="currentView === 'detail'">
+
+                            <!-- Back nav + title + action buttons -->
+                            <div class="card">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <button class="btn btn-outline btn-sm" @click="closeDetailView()">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                                            Back
+                                        </button>
+                                        <h3 style="font-size:1.05rem;margin:0;" x-text="detailScan?.course_name || detailScan?.label || 'Scan Detail'"></h3>
+                                        <span x-show="detailScan?.status" class="sev" :class="{
+                                            'sev-moderate': detailScan?.status === 'running',
+                                            'sev-minor': detailScan?.status === 'complete',
+                                            'sev-critical': detailScan?.status === 'failed'
+                                        }" x-text="detailScan?.status"></span>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <button x-show="detailScan?.status === 'running'" class="btn btn-danger btn-sm" @click="cancelDetailScan()">
+                                            Cancel Scan
+                                        </button>
+                                        <button x-show="detailScan?.status === 'interrupted'" class="btn btn-outline btn-sm" disabled title="Resume is not yet implemented">
+                                            Resume
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Loading state -->
+                            <div x-show="detailLoading" class="card" style="text-align:center;padding:3rem;">
+                                <span class="spinner"></span>
+                                <p class="text-muted text-sm mt-1">Loading scan details...</p>
+                            </div>
+
+                            <!-- Running scan view -->
+                            <template x-if="detailScan && detailScan.status !== 'complete' && !detailLoading">
+                                <div>
+                                    <!-- Phase Stepper -->
+                                    <div class="card">
+                                        <div class="phase-stepper">
+                                            <template x-for="(step, idx) in detailPhases" :key="step.key">
+                                                <div class="phase-step" :class="detailPhaseState(step.key)">
+                                                    <div class="phase-icon">
+                                                        <template x-if="detailPhaseState(step.key) === 'done'">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                                        </template>
+                                                        <template x-if="detailPhaseState(step.key) === 'active'">
+                                                            <span class="phase-spinner"></span>
+                                                        </template>
+                                                        <template x-if="detailPhaseState(step.key) === 'pending'">
+                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
+                                                        </template>
+                                                        <template x-if="detailPhaseState(step.key) === 'error'">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                                        </template>
+                                                    </div>
+                                                    <span class="phase-label" x-text="step.label"></span>
+                                                </div>
+                                            </template>
+                                        </div>
+
+                                        <!-- Progress bar -->
+                                        <div class="scan-progress-row">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" :style="'width:' + (detailStats.progress_pct || 0) + '%'"></div>
+                                            </div>
+                                            <span class="pct-label" x-text="(detailStats.progress_pct || 0).toFixed(0) + '%'"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Running Stats Bar -->
+                                    <div class="stats-bar">
+                                        <div class="stats-bar-item">
+                                            <span class="sbl">Items</span>
+                                            <span class="sbv" x-text="detailStats.items_done + '/' + detailStats.items_total"></span>
+                                        </div>
+                                        <div class="stats-bar-item">
+                                            <span class="sbl">Issues</span>
+                                            <span class="sbv" x-text="detailStats.issues"></span>
+                                        </div>
+                                        <div class="stats-bar-item">
+                                            <span class="sbl">Files</span>
+                                            <span class="sbv" x-text="detailStats.files_done + '/' + detailStats.files_total"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Live Feed -->
+                                    <div class="card">
+                                        <h4 style="font-size:.95rem;margin:0 0 .75rem 0;">Live Feed</h4>
+                                        <div x-show="detailItems.length === 0" class="text-muted text-sm" style="padding:.75rem 0;">
+                                            Waiting for scan items...
+                                        </div>
+                                        <div x-show="detailItems.length > 0" class="live-feed" x-ref="liveFeed">
+                                            <template x-for="(item, idx) in detailItems" :key="item.id || idx">
+                                                <div class="feed-item" :class="{ active: item.status === 'active' }" :x-ref="item.status === 'active' ? 'activeFeedItem' : null">
+                                                    <span class="feed-icon" :class="item.status">
+                                                        <template x-if="item.status === 'done'">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                                        </template>
+                                                        <template x-if="item.status === 'active'">
+                                                            <span class="feed-spinner"></span>
+                                                        </template>
+                                                        <template x-if="item.status === 'pending'">
+                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" opacity=".4"><circle cx="12" cy="12" r="6"/></svg>
+                                                        </template>
+                                                    </span>
+                                                    <span class="feed-name" x-text="item.title"></span>
+                                                    <span x-show="item.status === 'done' && item.issues != null" class="feed-issues" x-text="item.issues + ' issues'"></span>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
                             </template>
-                        </span>
-                        <button x-show="isAdmin" class="btn btn-ghost btn-sm" @click="showAdmin = !showAdmin" x-text="showAdmin ? 'Back to App' : 'Admin'"></button>
-                        <button x-show="authMode !== 'none'" class="btn btn-ghost btn-sm" @click="logout()">Logout</button>
+
+                            <!-- Error state -->
+                            <div x-show="detailScan?.status === 'failed' && !detailLoading" class="card">
+                                <div class="empty-state" style="padding:2rem;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--fail)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px;opacity:.7;margin-bottom:1rem;">
+                                        <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+                                    </svg>
+                                    <h3>Scan Failed</h3>
+                                    <p x-text="detailScan?.error || 'An unknown error occurred during the scan.'"></p>
+                                </div>
+                            </div>
+
+                            <!-- Completed scan: results view -->
+                            <template x-if="detailScan?.status === 'complete' && result && !detailLoading">
+                                <div>
+                                    <!-- Score gauge + summary -->
+                                    <div class="card">
+                                        <div class="results-header">
+                                            <div class="score-gauge" :class="scoreClass(result.overall_score)">
+                                                <span class="val" x-text="result.overall_score != null ? result.overall_score.toFixed(1) : '—'"></span>
+                                                <span class="lbl">Score</span>
+                                            </div>
+                                            <div class="results-summary">
+                                                <h3 x-text="detailScan.course_name || 'Scan Results'"></h3>
+                                                <p x-text="'Completed ' + formatDate(detailScan.completed_at || detailScan.created_at)"></p>
+                                                <div class="stats-grid" style="margin-top:.75rem;">
+                                                    <div class="stat-box">
+                                                        <div class="sv" x-text="allIssues().length"></div>
+                                                        <div class="sl">Issues</div>
+                                                    </div>
+                                                    <div class="stat-box">
+                                                        <div class="sv" x-text="(result.content_items || []).length"></div>
+                                                        <div class="sl">Content Items</div>
+                                                    </div>
+                                                    <div class="stat-box">
+                                                        <div class="sv" x-text="(result.file_items || []).length"></div>
+                                                        <div class="sl">Files</div>
+                                                    </div>
+                                                    <div class="stat-box">
+                                                        <div class="sv" x-text="allIssues().filter(i => i.auto_fixable).length"></div>
+                                                        <div class="sl">Auto-fixable</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tabs: Issues | Content | Files -->
+                                    <div class="card" x-data="{ detailTab: 'issues' }">
+                                        <div class="tabs">
+                                            <button class="tab-btn" :class="{ active: detailTab === 'issues' }" @click="detailTab = 'issues'">
+                                                Issues <span class="text-muted text-sm" x-text="'(' + allIssues().length + ')'"></span>
+                                            </button>
+                                            <button class="tab-btn" :class="{ active: detailTab === 'content' }" @click="detailTab = 'content'">
+                                                Content <span class="text-muted text-sm" x-text="'(' + (result.content_items || []).length + ')'"></span>
+                                            </button>
+                                            <button class="tab-btn" :class="{ active: detailTab === 'files' }" @click="detailTab = 'files'">
+                                                Files <span class="text-muted text-sm" x-text="'(' + (result.file_items || []).length + ')'"></span>
+                                            </button>
+                                        </div>
+
+                                        <!-- Issues table -->
+                                        <div x-show="detailTab === 'issues'">
+                                            <div x-show="allIssues().length === 0" class="empty-state" style="padding:2rem;">
+                                                <h3>No issues found</h3>
+                                                <p>This course has a perfect accessibility score.</p>
+                                            </div>
+                                            <div x-show="allIssues().length > 0" style="overflow-x:auto;">
+                                                <table class="tbl">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Severity</th>
+                                                            <th>Issue</th>
+                                                            <th>Item</th>
+                                                            <th>Standard</th>
+                                                            <th class="tc">Fix</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <template x-for="(issue, idx) in allIssues()" :key="idx">
+                                                            <tr>
+                                                                <td>
+                                                                    <span class="sev" :class="'sev-' + issue.severity" x-text="issue.severity"></span>
+                                                                </td>
+                                                                <td>
+                                                                    <strong x-text="issue.description || issue.check_id"></strong>
+                                                                    <div x-show="issue.selector" class="mono text-sm text-muted mt-1" x-text="issue.selector" style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                                                                </td>
+                                                                <td class="text-sm" x-text="issue._itemName || '—'"></td>
+                                                                <td class="text-sm mono" x-text="getStandards(issue)"></td>
+                                                                <td class="tc">
+                                                                    <span x-show="issue.auto_fixable" class="text-success text-sm" style="font-weight:600;">Auto</span>
+                                                                    <span x-show="!issue.auto_fixable" class="text-muted text-sm">Manual</span>
+                                                                </td>
+                                                            </tr>
+                                                        </template>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <!-- Content items table -->
+                                        <div x-show="detailTab === 'content'">
+                                            <div x-show="sortedContent().length === 0" class="empty-state" style="padding:2rem;">
+                                                <p>No content items scanned.</p>
+                                            </div>
+                                            <div x-show="sortedContent().length > 0" style="overflow-x:auto;">
+                                                <table class="tbl">
+                                                    <thead><tr><th>Title</th><th>Type</th><th class="tr">Score</th><th class="tr">Issues</th></tr></thead>
+                                                    <tbody>
+                                                        <template x-for="item in sortedContent()" :key="item.id || item.title">
+                                                            <tr>
+                                                                <td><strong x-text="item.title"></strong></td>
+                                                                <td class="text-sm text-muted" x-text="item.type || '—'"></td>
+                                                                <td class="tr">
+                                                                    <span class="score-pill" :class="scoreClass(item.score)" x-text="item.score != null ? item.score.toFixed(1) + '%' : '—'"></span>
+                                                                </td>
+                                                                <td class="tr" x-text="(item.issues || []).length"></td>
+                                                            </tr>
+                                                        </template>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <!-- Files table -->
+                                        <div x-show="detailTab === 'files'">
+                                            <div x-show="sortedFiles().length === 0" class="empty-state" style="padding:2rem;">
+                                                <p>No files scanned.</p>
+                                            </div>
+                                            <div x-show="sortedFiles().length > 0" style="overflow-x:auto;">
+                                                <table class="tbl">
+                                                    <thead><tr><th>File</th><th>Type</th><th class="tr">Score</th><th class="tr">Issues</th></tr></thead>
+                                                    <tbody>
+                                                        <template x-for="item in sortedFiles()" :key="item.id || item.display_name">
+                                                            <tr>
+                                                                <td><strong x-text="item.display_name || item.filename"></strong></td>
+                                                                <td class="text-sm text-muted" x-text="item.content_type || '—'"></td>
+                                                                <td class="tr">
+                                                                    <span class="score-pill" :class="scoreClass(item.score)" x-text="item.score != null ? item.score.toFixed(1) + '%' : '—'"></span>
+                                                                </td>
+                                                                <td class="tr" x-text="(item.issues || []).length"></td>
+                                                            </tr>
+                                                        </template>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Action buttons for completed scan -->
+                                    <div class="card">
+                                        <div class="flex items-center gap-1 flex-wrap">
+                                            <button x-show="hasFixableIssues()" class="btn btn-success btn-sm" @click="applyFixes()">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                                Auto-fix Issues (<span x-text="fixableIssues().length"></span>)
+                                            </button>
+                                            <button class="btn btn-outline btn-sm" @click="downloadReport()">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                                Download Report
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
+                        </div>
+
+                        <!-- ═══════════ Admin View ═══════════ -->
+                        <div x-show="currentView === 'admin'">
+                            <div x-data="adminApp()" x-init="init()">
+                                <div class="tabs">
+                                    <button class="tab-btn" :class="{ active: tab === 'users' }" @click="tab = 'users'; loadUsers()">Users</button>
+                                    <button class="tab-btn" :class="{ active: tab === 'audit' }" @click="tab = 'audit'; loadAuditLogs()">Audit Logs</button>
+                                    <button class="tab-btn" :class="{ active: tab === 'settings' }" @click="tab = 'settings'; loadSettings()">Settings</button>
+                                </div>
+
+                                <!-- Users Tab -->
+                                <div x-show="tab === 'users'" class="card">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h2 style="font-size:1.15rem;margin:0;">Users</h2>
+                                        <button class="btn btn-primary btn-sm" @click="showUserForm = !showUserForm">
+                                            <span x-text="showUserForm ? 'Cancel' : 'New User'"></span>
+                                        </button>
+                                    </div>
+
+                                    <!-- New user form -->
+                                    <div x-show="showUserForm" class="card" style="background:#f8fafc;margin-bottom:1rem;">
+                                        <label>Email</label>
+                                        <input type="email" x-model="userForm.email">
+                                        <label>Display Name</label>
+                                        <input type="text" x-model="userForm.display_name">
+                                        <label>Role</label>
+                                        <select x-model="userForm.role">
+                                            <option value="admin">Admin</option>
+                                            <option value="auditor">Auditor</option>
+                                            <option value="viewer">Viewer</option>
+                                        </select>
+                                        <label>Password (optional for SSO users)</label>
+                                        <input type="password" x-model="userForm.password">
+                                        <button class="btn btn-success btn-sm" @click="createUser()">Create User</button>
+                                    </div>
+
+                                    <div x-show="loading" class="flex items-center gap-1 text-muted"><span class="spinner"></span> Loading...</div>
+
+                                    <table class="tbl" x-show="users.length">
+                                        <thead><tr><th>Email</th><th>Name</th><th>Role</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
+                                        <tbody>
+                                            <template x-for="u in users" :key="u.id">
+                                                <tr>
+                                                    <td x-text="u.email"></td>
+                                                    <td x-text="u.display_name"></td>
+                                                    <td>
+                                                        <select :value="u.role" @change="changeUserRole(u.id, $event.target.value)" style="width:auto;padding:.2rem .5rem;margin:0;font-size:.82rem;">
+                                                            <option value="admin">admin</option>
+                                                            <option value="auditor">auditor</option>
+                                                            <option value="viewer">viewer</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <span :class="u.is_active ? 'text-success' : 'text-danger'" x-text="u.is_active ? 'Active' : 'Inactive'" style="font-weight:600;font-size:.82rem;"></span>
+                                                    </td>
+                                                    <td class="text-sm text-muted" x-text="formatDate(u.last_login_at)"></td>
+                                                    <td>
+                                                        <button class="btn btn-outline btn-sm" @click="toggleUserActive(u.id, u.is_active)" x-text="u.is_active ? 'Disable' : 'Enable'"></button>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Audit Logs Tab -->
+                                <div x-show="tab === 'audit'" class="card">
+                                    <h2 style="font-size:1.15rem;margin-bottom:1rem;">Audit Logs</h2>
+                                    <div class="flex items-center gap-1 mb-2" style="flex-wrap:wrap;">
+                                        <input type="text" x-model="auditFilter.action" placeholder="Filter by action..." style="width:auto;margin:0;">
+                                        <button class="btn btn-outline btn-sm" @click="loadAuditLogs()">Search</button>
+                                        <span class="text-muted text-sm" x-text="auditTotal + ' total entries'"></span>
+                                    </div>
+
+                                    <div x-show="loading" class="flex items-center gap-1 text-muted"><span class="spinner"></span> Loading...</div>
+
+                                    <div style="overflow-x:auto;">
+                                        <table class="tbl" x-show="auditLogs.length">
+                                            <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Resource</th><th>Status</th><th>Detail</th></tr></thead>
+                                            <tbody>
+                                                <template x-for="log in auditLogs" :key="log.id">
+                                                    <tr>
+                                                        <td class="text-sm mono" x-text="formatDate(log.timestamp)"></td>
+                                                        <td class="text-sm" x-text="log.user_email || '—'"></td>
+                                                        <td><span class="sev" style="background:#e0e7ff;color:#3730a3;" x-text="log.action"></span></td>
+                                                        <td class="text-sm" x-text="log.resource_type ? log.resource_type + ':' + (log.resource_id || '') : '—'"></td>
+                                                        <td>
+                                                            <span :class="log.status === 'success' ? 'text-success' : 'text-danger'" x-text="log.status" style="font-weight:600;font-size:.82rem;"></span>
+                                                        </td>
+                                                        <td class="mono text-sm" style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" x-text="log.detail || '—'"></td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Settings Tab -->
+                                <div x-show="tab === 'settings'" class="card">
+                                    <h2 style="font-size:1.15rem;margin-bottom:1rem;">App Settings</h2>
+
+                                    <div class="card" style="background:#f8fafc;margin-bottom:1rem;">
+                                        <div class="flex items-center gap-1" style="flex-wrap:wrap;">
+                                            <input type="text" x-model="settingForm.key" placeholder="Key" style="width:auto;margin:0;">
+                                            <input type="text" x-model="settingForm.value" placeholder="Value" style="width:auto;margin:0;flex:1;">
+                                            <button class="btn btn-primary btn-sm" @click="saveSetting()">Save</button>
+                                        </div>
+                                    </div>
+
+                                    <table class="tbl" x-show="settings.length">
+                                        <thead><tr><th>Key</th><th>Value</th><th>Updated</th></tr></thead>
+                                        <tbody>
+                                            <template x-for="s in settings" :key="s.key">
+                                                <tr>
+                                                    <td class="mono" x-text="s.key"></td>
+                                                    <td x-text="s.value"></td>
+                                                    <td class="text-sm text-muted" x-text="formatDate(s.updated_at)"></td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                    <p x-show="!settings.length" class="text-muted text-sm">No settings configured yet.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </main>
+
+                    <!-- Footer -->
+                    <footer style="text-align:center;color:var(--muted);font-size:.78rem;padding:1.5rem;border-top:1px solid var(--border);margin-top:auto;">
+                        <p>Built with <strong>A11yScope</strong> v2.0 — Canvas LMS accessibility auditor</p>
+                        <p>Open source under AGPL-3.0 License</p>
+                    </footer>
+                </div>
+
+                <!-- ═══════════ New Scan Modal ═══════════ -->
+                <div x-show="showNewScanModal" class="modal-overlay" x-cloak @click="closeNewScanModal()" @keydown.escape.window="closeNewScanModal()">
+                    <div class="modal-card" @click.stop>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 style="font-size:1.15rem;margin:0;">New Scan</h3>
+                            <button class="btn btn-ghost" @click="closeNewScanModal()" aria-label="Close">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- API Key Selection -->
+                        <label for="scan-key-select">Canvas API Key</label>
+                        <select id="scan-key-select" @change="loadCoursesForKey($event.target.value)" :disabled="newScanLoading">
+                            <option value="">-- Select an API key --</option>
+                            <template x-for="key in savedKeys" :key="key.id">
+                                <option :value="key.id" x-text="key.name + ' (' + key.canvas_url + ')'"></option>
+                            </template>
+                            <option value="__add_new__">+ Add New Key...</option>
+                        </select>
+
+                        <!-- Inline Add Key form (shown when "Add New Key" selected) -->
+                        <div x-show="newScanAddKeyInline" style="background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:1rem;">
+                            <label for="inline-key-name">Key Name</label>
+                            <input id="inline-key-name" type="text" x-model="newKeyLabel" placeholder="e.g., Main Canvas Instance">
+                            <label for="inline-key-url">Canvas URL</label>
+                            <input id="inline-key-url" type="url" x-model="newKeyUrl" placeholder="https://canvas.example.edu">
+                            <label for="inline-key-token">API Token</label>
+                            <input id="inline-key-token" type="password" x-model="newKeyToken" placeholder="Canvas API access token">
+                            <div class="flex items-center gap-1">
+                                <button class="btn btn-success btn-sm" @click="addKeyInline()" :disabled="!newKeyLabel || !newKeyUrl || !newKeyToken">Save Key</button>
+                                <button class="btn btn-outline btn-sm" @click="newScanAddKeyInline = false">Cancel</button>
+                            </div>
+                            <span x-show="keyError" class="text-danger text-sm" x-text="keyError"></span>
+                        </div>
+
+                        <!-- Loading state for courses -->
+                        <div x-show="newScanLoading" class="flex items-center gap-1 text-muted" style="padding:.75rem 0;">
+                            <span class="spinner"></span> Loading courses...
+                        </div>
+
+                        <!-- Course selection -->
+                        <div x-show="newScanCourses.length > 0 && !newScanLoading">
+                            <!-- Search/filter -->
+                            <label for="course-filter">Filter Courses</label>
+                            <input id="course-filter" type="search" x-model="newScanFilter" placeholder="Search courses...">
+
+                            <!-- Select All toggle -->
+                            <div class="flex items-center gap-1 mb-1">
+                                <label style="margin:0;font-size:.85rem;cursor:pointer;">
+                                    <input type="checkbox" @change="toggleSelectAll()" :checked="newScanSelected.length === filteredCourses.length && filteredCourses.length > 0" style="margin-right:.35rem;">
+                                    Select All (<span x-text="filteredCourses.length"></span> courses)
+                                </label>
+                                <span x-show="newScanSelected.length > 0" class="text-sm text-muted" style="margin-left:auto;" x-text="newScanSelected.length + ' selected'"></span>
+                            </div>
+
+                            <!-- Course list with checkboxes -->
+                            <div style="max-height:280px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;background:#fafbfc;">
+                                <template x-for="course in filteredCourses" :key="course.id">
+                                    <label class="flex items-center gap-1" style="padding:.55rem 1rem;border-bottom:1px solid #f1f5f9;cursor:pointer;font-size:.88rem;margin:0;">
+                                        <input type="checkbox" :value="course.id" x-model="newScanSelected" style="margin:0;">
+                                        <span style="flex:1;" x-text="course.name"></span>
+                                        <span x-show="course.code" class="text-sm text-muted" x-text="course.code"></span>
+                                    </label>
+                                </template>
+                                <div x-show="filteredCourses.length === 0" class="text-muted text-sm" style="padding:1rem;text-align:center;">
+                                    No courses match your filter.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- No courses message -->
+                        <div x-show="newScanKeyId && newScanCourses.length === 0 && !newScanLoading" class="text-muted text-sm" style="padding:.75rem 0;">
+                            No courses found for this API key. Verify the token has teacher enrollment.
+                        </div>
+
+                        <!-- Action buttons -->
+                        <div class="flex items-center gap-1 mt-2">
+                            <button class="btn btn-primary"
+                                @click="startScans()"
+                                :disabled="newScanSelected.length === 0 || newScanLoading"
+                                x-text="newScanSelected.length > 0 ? 'Start ' + newScanSelected.length + ' Scan' + (newScanSelected.length > 1 ? 's' : '') : 'Start Scans'">
+                            </button>
+                            <button class="btn btn-outline" @click="closeNewScanModal()">Cancel</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- ═══════════════ Admin Panel ═══════════════ -->
-                <template x-if="showAdmin">
-                    <div x-data="adminApp()" x-init="init()">
-                        <div class="tabs">
-                            <button class="tab-btn" :class="{ active: tab === 'users' }" @click="tab = 'users'; loadUsers()">Users</button>
-                            <button class="tab-btn" :class="{ active: tab === 'audit' }" @click="tab = 'audit'; loadAuditLogs()">Audit Logs</button>
-                            <button class="tab-btn" :class="{ active: tab === 'settings' }" @click="tab = 'settings'; loadSettings()">Settings</button>
-                        </div>
-
-                        <!-- Users Tab -->
-                        <div x-show="tab === 'users'" class="card">
-                            <div class="flex items-center justify-between mb-2">
-                                <h2 style="font-size:1.15rem;margin:0;">Users</h2>
-                                <button class="btn btn-primary btn-sm" @click="showUserForm = !showUserForm">
-                                    <span x-text="showUserForm ? 'Cancel' : 'New User'"></span>
-                                </button>
-                            </div>
-
-                            <!-- New user form -->
-                            <div x-show="showUserForm" class="card" style="background:#f8fafc;margin-bottom:1rem;">
-                                <label>Email</label>
-                                <input type="email" x-model="userForm.email">
-                                <label>Display Name</label>
-                                <input type="text" x-model="userForm.display_name">
-                                <label>Role</label>
-                                <select x-model="userForm.role">
-                                    <option value="admin">Admin</option>
-                                    <option value="auditor">Auditor</option>
-                                    <option value="viewer">Viewer</option>
-                                </select>
-                                <label>Password (optional for SSO users)</label>
-                                <input type="password" x-model="userForm.password">
-                                <button class="btn btn-success btn-sm" @click="createUser()">Create User</button>
-                            </div>
-
-                            <div x-show="loading" class="flex items-center gap-1 text-muted"><span class="spinner"></span> Loading...</div>
-
-                            <table class="tbl" x-show="users.length">
-                                <thead><tr><th>Email</th><th>Name</th><th>Role</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
-                                <tbody>
-                                    <template x-for="u in users" :key="u.id">
-                                        <tr>
-                                            <td x-text="u.email"></td>
-                                            <td x-text="u.display_name"></td>
-                                            <td>
-                                                <select :value="u.role" @change="changeUserRole(u.id, $event.target.value)" style="width:auto;padding:.2rem .5rem;margin:0;font-size:.82rem;">
-                                                    <option value="admin">admin</option>
-                                                    <option value="auditor">auditor</option>
-                                                    <option value="viewer">viewer</option>
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <span :class="u.is_active ? 'text-success' : 'text-danger'" x-text="u.is_active ? 'Active' : 'Inactive'" style="font-weight:600;font-size:.82rem;"></span>
-                                            </td>
-                                            <td class="text-sm text-muted" x-text="formatDate(u.last_login_at)"></td>
-                                            <td>
-                                                <button class="btn btn-outline btn-sm" @click="toggleUserActive(u.id, u.is_active)" x-text="u.is_active ? 'Disable' : 'Enable'"></button>
-                                            </td>
-                                        </tr>
-                                    </template>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Audit Logs Tab -->
-                        <div x-show="tab === 'audit'" class="card">
-                            <h2 style="font-size:1.15rem;margin-bottom:1rem;">Audit Logs</h2>
-                            <div class="flex items-center gap-1 mb-2" style="flex-wrap:wrap;">
-                                <input type="text" x-model="auditFilter.action" placeholder="Filter by action..." style="width:auto;margin:0;">
-                                <button class="btn btn-outline btn-sm" @click="loadAuditLogs()">Search</button>
-                                <span class="text-muted text-sm" x-text="auditTotal + ' total entries'"></span>
-                            </div>
-
-                            <div x-show="loading" class="flex items-center gap-1 text-muted"><span class="spinner"></span> Loading...</div>
-
-                            <div style="overflow-x:auto;">
-                                <table class="tbl" x-show="auditLogs.length">
-                                    <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Resource</th><th>Status</th><th>Detail</th></tr></thead>
-                                    <tbody>
-                                        <template x-for="log in auditLogs" :key="log.id">
-                                            <tr>
-                                                <td class="text-sm mono" x-text="formatDate(log.timestamp)"></td>
-                                                <td class="text-sm" x-text="log.user_email || '—'"></td>
-                                                <td><span class="sev" style="background:#e0e7ff;color:#3730a3;" x-text="log.action"></span></td>
-                                                <td class="text-sm" x-text="log.resource_type ? log.resource_type + ':' + (log.resource_id || '') : '—'"></td>
-                                                <td>
-                                                    <span :class="log.status === 'success' ? 'text-success' : 'text-danger'" x-text="log.status" style="font-weight:600;font-size:.82rem;"></span>
-                                                </td>
-                                                <td class="mono text-sm" style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" x-text="log.detail || '—'"></td>
-                                            </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Settings Tab -->
-                        <div x-show="tab === 'settings'" class="card">
-                            <h2 style="font-size:1.15rem;margin-bottom:1rem;">App Settings</h2>
-
-                            <div class="card" style="background:#f8fafc;margin-bottom:1rem;">
-                                <div class="flex items-center gap-1" style="flex-wrap:wrap;">
-                                    <input type="text" x-model="settingForm.key" placeholder="Key" style="width:auto;margin:0;">
-                                    <input type="text" x-model="settingForm.value" placeholder="Value" style="width:auto;margin:0;flex:1;">
-                                    <button class="btn btn-primary btn-sm" @click="saveSetting()">Save</button>
-                                </div>
-                            </div>
-
-                            <table class="tbl" x-show="settings.length">
-                                <thead><tr><th>Key</th><th>Value</th><th>Updated</th></tr></thead>
-                                <tbody>
-                                    <template x-for="s in settings" :key="s.key">
-                                        <tr>
-                                            <td class="mono" x-text="s.key"></td>
-                                            <td x-text="s.value"></td>
-                                            <td class="text-sm text-muted" x-text="formatDate(s.updated_at)"></td>
-                                        </tr>
-                                    </template>
-                                </tbody>
-                            </table>
-                            <p x-show="!settings.length" class="text-muted text-sm">No settings configured yet.</p>
-                        </div>
-                    </div>
-                </template>
-
-                <!-- ═══════════════ Audit Wizard (existing) ═══════════════ -->
-                <template x-if="!showAdmin">
-                    <div>
-                        <!-- Step Indicators -->
-                        <div class="steps">
-                            <template x-for="(s, i) in stepLabels" :key="i">
-                                <span class="step-pill"
-                                      :class="{ 'active': step === i+1, 'done': step > i+1 }"
-                                      x-text="(i+1) + '. ' + s"></span>
-                            </template>
-                        </div>
-
-                        <!-- ═══════════════ Step 1: Configure ═══════════════ -->
-                        <div x-show="step === 1" class="card">
-                            <h2 style="font-size:1.15rem;margin-bottom:1rem;">Connect to Canvas</h2>
-
-                            <label for="canvas-url">Canvas URL</label>
-                            <input id="canvas-url" type="url" x-model="canvasUrl" placeholder="https://canvas.jccc.edu">
-
-                            <label for="api-token">Canvas API Token</label>
-                            <input id="api-token" type="password" x-model="apiToken" placeholder="Your Canvas API access token">
-
-                            <div class="flex items-center gap-2 mt-1">
-                                <button class="btn btn-primary" @click="connect()" :disabled="connecting || !apiToken">
-                                    <span x-show="connecting" class="spinner"></span>
-                                    <span x-text="connecting ? 'Connecting...' : 'Connect'"></span>
-                                </button>
-                                <span x-show="configError" class="text-danger text-sm" x-text="configError"></span>
-                                <span x-show="validated" class="text-success text-sm">Connected</span>
-                            </div>
-
-                            <!-- AI Provider (Optional) -->
-                            <details style="margin-top:1.5rem;border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;" x-show="validated">
-                                <summary style="cursor:pointer;font-weight:600;font-size:.95rem;">AI Provider (Optional)</summary>
-                                <div style="margin-top:1rem;">
-                                    <label for="ai-provider">AI Provider</label>
-                                    <select id="ai-provider" x-model="aiProvider">
-                                        <option value="">None — skip AI features</option>
-                                        <option value="anthropic">Anthropic (Claude)</option>
-                                        <option value="openai">OpenAI (GPT-4o)</option>
-                                        <option value="google">Google (Gemini)</option>
-                                        <option value="grok">Grok (xAI)</option>
-                                    </select>
-
-                                    <template x-if="aiProvider">
-                                        <div>
-                                            <label for="ai-key">API Key</label>
-                                            <input id="ai-key" type="password" x-model="aiApiKey" placeholder="Your API key (stored locally, never sent to our servers)">
-
-                                            <label for="ai-model">Model (optional override)</label>
-                                            <input id="ai-model" type="text" x-model="aiModel" placeholder="Leave blank for default">
-
-                                            <div class="flex items-center gap-2 mt-1">
-                                                <button class="btn btn-outline" @click="validateAI()" :disabled="!aiApiKey || aiValidating">
-                                                    <span x-show="aiValidating" class="spinner"></span>
-                                                    <span x-text="aiValidating ? 'Validating...' : 'Validate Key'"></span>
-                                                </button>
-                                                <span x-show="aiValidated" class="text-success text-sm">Key validated</span>
-                                                <span x-show="aiError" class="text-danger text-sm" x-text="aiError"></span>
-                                            </div>
-                                        </div>
-                                    </template>
-                                </div>
-                            </details>
-                        </div>
-
-                        <!-- ═══════════════ Step 2: Select Course ═══════════════ -->
-                        <div x-show="step === 2" class="card">
-                            <div class="flex items-center justify-between mb-1">
-                                <h2 style="font-size:1.15rem;margin:0;">Select a Course</h2>
-                                <button class="btn btn-outline" @click="step = 1">Back</button>
-                            </div>
-
-                            <input type="search" x-model="courseFilter" placeholder="Search courses..." style="margin-bottom:.75rem;">
-
-                            <div x-show="loadingCourses" class="flex items-center gap-2 text-muted">
-                                <span class="spinner"></span> Loading courses...
-                            </div>
-
-                            <template x-for="c in filteredCourses()" :key="c.id">
-                                <div class="course-card" :class="{ 'selected': selectedCourse?.id === c.id }" @click="selectedCourse = c">
-                                    <h3 x-text="c.name"></h3>
-                                    <p><span x-text="c.course_code"></span> <span x-show="c.term" x-text="' — ' + c.term"></span></p>
-                                </div>
-                            </template>
-
-                            <div x-show="selectedCourse && courseMeta" class="card" style="margin-top:1rem;background:#f8fafc;">
-                                <h3 style="font-size:.95rem;margin-bottom:.5rem;">Course Details</h3>
-                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.25rem .5rem;font-size:.88rem;">
-                                    <span class="text-muted">Instructor:</span><span x-text="courseMeta?.instructor_name || '—'"></span>
-                                    <span class="text-muted">Term:</span><span x-text="courseMeta?.term_name || '—'"></span>
-                                    <span class="text-muted">Enrollment:</span><span x-text="(courseMeta?.enrollment_count || 0) + ' students'"></span>
-                                    <span class="text-muted">Course Code:</span><span x-text="courseMeta?.course_code || '—'"></span>
-                                </div>
-                            </div>
-
-                            <div class="mt-2" x-show="selectedCourse">
-                                <button class="btn btn-primary" @click="startAudit()" :disabled="!canAudit">
-                                    Audit <span x-text="selectedCourse?.name"></span>
-                                </button>
-                                <span x-show="!canAudit" class="text-muted text-sm">Viewer role cannot start audits</span>
-                            </div>
-                        </div>
-
-                        <!-- ═══════════════ Step 3: Audit Running ═══════════════ -->
-                        <div x-show="step === 3" class="card">
-                            <h2 style="font-size:1.15rem;margin-bottom:1rem;">Audit in Progress</h2>
-
-                            <div class="progress-bar mb-1">
-                                <div class="progress-fill" :style="'width:' + progressPct + '%'"></div>
-                            </div>
-                            <p class="text-sm text-muted mb-2" x-text="currentPhaseLabel || 'Starting...'"></p>
-
-                            <div style="max-height:300px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;padding:.5rem .75rem;">
-                                <template x-for="(entry, i) in progressLog" :key="i">
-                                    <div class="log-entry" :class="{ 'phase': entry.type === 'phase' }">
-                                        <span x-text="formatLogEntry(entry)"></span>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-
-                        <!-- ═══════════════ Step 4: Results Dashboard ═══════════════ -->
-                        <div x-show="step === 4">
-                            <div class="card">
-                                <div class="flex items-center gap-2" style="flex-wrap:wrap;">
-                                    <div style="flex:1;min-width:280px;">
-                                        <h2 style="font-size:1.15rem;margin-bottom:.25rem;">Audit Results</h2>
-                                        <p class="text-muted text-sm" x-text="result?.course_name + ' — Course ID ' + result?.course_id"></p>
-                                        <p class="mt-1">
-                                            <span x-show="result?.overall_score >= 90" class="sev" style="background:#dcfce7;color:#166534;">PASSING</span>
-                                            <span x-show="result?.overall_score < 90" class="sev" style="background:#fee2e2;color:#991b1b;">NEEDS WORK</span>
-                                        </p>
-                                    </div>
-                                    <div class="score-gauge" :class="scoreClass(result?.overall_score)"
-                                         :aria-label="'Overall score: ' + (result?.overall_score?.toFixed(1) || 0) + ' percent'"
-                                         role="img">
-                                        <span class="val" x-text="(result?.overall_score?.toFixed(1) || '0.0') + '%'"></span>
-                                        <span class="lbl">Overall</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card">
-                                <h2 style="font-size:1.05rem;margin-bottom:.5rem;">Summary</h2>
-                                <div class="stats-grid">
-                                    <div class="stat-box"><div class="sv" x-text="result?.total_issues || 0"></div><div class="sl">Total Issues</div></div>
-                                    <div class="stat-box"><div class="sv" style="color:#991b1b" x-text="result?.critical_count || 0"></div><div class="sl">Critical</div></div>
-                                    <div class="stat-box"><div class="sv" style="color:#9a3412" x-text="result?.serious_count || 0"></div><div class="sl">Serious</div></div>
-                                    <div class="stat-box"><div class="sv" style="color:#854d0e" x-text="result?.moderate_count || 0"></div><div class="sl">Moderate</div></div>
-                                    <div class="stat-box"><div class="sv" style="color:#4b5563" x-text="result?.minor_count || 0"></div><div class="sl">Minor</div></div>
-                                    <div class="stat-box"><div class="sv" style="color:var(--pass)" x-text="result?.items_passing || 0"></div><div class="sl">Passing</div></div>
-                                    <div class="stat-box"><div class="sv" style="color:var(--fail)" x-text="result?.items_failing || 0"></div><div class="sl">Failing</div></div>
-                                </div>
-                            </div>
-
-                            <div class="card" x-show="result?.content_items?.length">
-                                <h2 style="font-size:1.05rem;margin-bottom:.5rem;">Content Items</h2>
-                                <div style="overflow-x:auto;">
-                                    <table class="tbl">
-                                        <thead><tr><th>Type</th><th>Title</th><th class="tr">Score</th><th class="tr">Issues</th></tr></thead>
-                                        <tbody>
-                                            <template x-for="item in sortedContent()" :key="item.id">
-                                                <tr>
-                                                    <td x-text="item.content_type"></td>
-                                                    <td><a :href="item.url" target="_blank" rel="noopener" x-text="item.title"></a></td>
-                                                    <td class="tr"><span class="score-pill" :class="scoreClass(item.score)" x-text="item.score != null ? item.score.toFixed(1) + '%' : '—'"></span></td>
-                                                    <td class="tr" x-text="item.issues.length"></td>
-                                                </tr>
-                                            </template>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div class="card" x-show="result?.file_items?.length">
-                                <h2 style="font-size:1.05rem;margin-bottom:.5rem;">File Items</h2>
-                                <div style="overflow-x:auto;">
-                                    <table class="tbl">
-                                        <thead><tr><th>File</th><th>Type</th><th class="tr">Size</th><th class="tr">Score</th><th class="tr">Issues</th></tr></thead>
-                                        <tbody>
-                                            <template x-for="item in sortedFiles()" :key="item.id">
-                                                <tr>
-                                                    <td x-text="item.display_name"></td>
-                                                    <td class="mono" x-text="item.content_type_header"></td>
-                                                    <td class="tr mono" x-text="(item.size / 1024).toFixed(1) + ' KB'"></td>
-                                                    <td class="tr"><span class="score-pill" :class="scoreClass(item.score)" x-text="item.score != null ? item.score.toFixed(1) + '%' : '—'"></span></td>
-                                                    <td class="tr" x-text="item.issues.length"></td>
-                                                </tr>
-                                            </template>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div class="card" x-show="allIssues().length">
-                                <h2 style="font-size:1.05rem;margin-bottom:.5rem;">Issues Detail</h2>
-                                <p class="text-muted text-sm mb-1" x-text="allIssues().length + ' issue' + (allIssues().length !== 1 ? 's' : '') + ' found, ordered by severity.'"></p>
-                                <div style="overflow-x:auto;">
-                                    <table class="tbl">
-                                        <thead><tr><th>Severity</th><th>Check</th><th>Item</th><th>WCAG</th><th>Standards</th><th>Description</th><th class="tc">Actions</th></tr></thead>
-                                        <tbody>
-                                            <template x-for="(iss, idx) in allIssues()" :key="idx">
-                                                <tr>
-                                                    <td><span class="sev" :class="'sev-' + iss.severity" x-text="iss.severity"></span></td>
-                                                    <td class="mono" x-text="iss.check_id"></td>
-                                                    <td x-text="iss._itemName" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></td>
-                                                    <td><a class="text-sm" style="color:var(--primary);" :href="'https://www.w3.org/WAI/WCAG21/Understanding/' + iss.wcag_criterion.replaceAll('.', '')" target="_blank" rel="noopener" x-text="iss.wcag_criterion"></a></td>
-                                                    <td class="text-sm">
-                                                        <span x-show="getStandards(iss)" x-text="getStandards(iss)"></span>
-                                                    </td>
-                                                    <td>
-                                                        <span x-text="iss.title"></span>
-                                                        <code x-show="iss.element_html" class="mono text-sm" style="display:block;max-width:350px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#334155;background:#f8fafc;padding:.15em .4em;border-radius:3px;margin-top:.2rem;" x-text="iss.element_html?.substring(0, 120)"></code>
-                                                    </td>
-                                                    <td class="tc">
-                                                        <span x-show="iss.fixed" title="Fixed">&#10004;</span>
-                                                        <span x-show="!iss.fixed && iss.auto_fixable" title="Auto-fixable">&#9881;</span>
-                                                        <span x-show="!iss.fixed && !iss.auto_fixable && iss.ai_fixable" title="AI-fixable">&#9733;</span>
-                                                        <span x-show="!iss.fixed && !iss.auto_fixable && !iss.ai_fixable" title="Manual">—</span>
-                                                        <button x-show="aiValidated && !iss.fixed" class="btn btn-outline" style="padding:.2em .5em;font-size:.72rem;" @click="getAISuggestion(idx)" :disabled="iss._aiLoading">
-                                                            AI
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            </template>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div class="card flex items-center gap-2" style="flex-wrap:wrap;">
-                                <button class="btn btn-primary" @click="step = 5" x-show="hasFixableIssues() && canAudit">Fix Issues</button>
-                                <button class="btn btn-outline" @click="step = 6">Download Reports</button>
-                            </div>
-                        </div>
-
-                        <!-- ═══════════════ Step 5: Fix & Remediate ═══════════════ -->
-                        <div x-show="step === 5" class="card">
-                            <div class="flex items-center justify-between mb-1">
-                                <h2 style="font-size:1.15rem;margin:0;">Fix & Remediate</h2>
-                                <button class="btn btn-outline" @click="step = 4">Back to Results</button>
-                            </div>
-
-                            <p class="text-muted text-sm mb-2" x-text="fixableIssues().length + ' auto-fixable issue' + (fixableIssues().length !== 1 ? 's' : '')"></p>
-
-                            <template x-for="(iss, idx) in fixableIssues()" :key="idx">
-                                <div class="fix-item">
-                                    <label>
-                                        <input type="checkbox" :value="idx" x-model="selectedFixes">
-                                        <div>
-                                            <span class="sev" :class="'sev-' + iss.severity" x-text="iss.severity"></span>
-                                            <strong x-text="iss.check_id"></strong> in <em x-text="iss._itemName"></em>
-                                            <p class="text-sm text-muted" x-text="iss.title"></p>
-                                        </div>
-                                    </label>
-                                </div>
-                            </template>
-
-                            <div class="mt-2 flex items-center gap-2" style="flex-wrap:wrap;">
-                                <label style="font-weight:400;font-size:.88rem;display:flex;align-items:center;gap:.4rem;margin:0;">
-                                    <input type="checkbox" x-model="pushToCanvas"> Push fixes to Canvas
-                                </label>
-                            </div>
-
-                            <div class="mt-2 flex items-center gap-2" style="flex-wrap:wrap;">
-                                <button class="btn btn-success" @click="applyFixes()" :disabled="fixing || selectedFixes.length === 0">
-                                    <span x-show="fixing" class="spinner"></span>
-                                    <span x-text="fixing ? 'Applying...' : 'Apply Selected (' + selectedFixes.length + ')'"></span>
-                                </button>
-                                <button class="btn btn-outline" @click="selectedFixes = fixableIssues().map((_, i) => String(i))">Select All</button>
-                                <button class="btn btn-outline" @click="selectedFixes = []">Deselect All</button>
-                            </div>
-
-                            <div x-show="fixResult" class="mt-2">
-                                <p class="text-success" x-show="fixResult?.fixed_count">
-                                    Fixed <span x-text="fixResult?.fixed_count"></span> issues. New score: <strong x-text="fixResult?.new_score?.toFixed(1) + '%'"></strong>
-                                </p>
-                                <template x-for="err in (fixResult?.errors || [])" :key="err">
-                                    <p class="text-danger text-sm" x-text="err"></p>
-                                </template>
-                            </div>
-                        </div>
-
-                        <!-- ═══════════════ Step 6: Reports ═══════════════ -->
-                        <div x-show="step === 6" class="card">
-                            <div class="flex items-center justify-between mb-1">
-                                <h2 style="font-size:1.15rem;margin:0;">Download Reports</h2>
-                                <button class="btn btn-outline" @click="step = 4">Back to Results</button>
-                            </div>
-
-                            <p class="text-muted text-sm mb-2">Download the audit results in your preferred format.</p>
-
-                            <div class="flex gap-2" style="flex-wrap:wrap;">
-                                <a class="btn btn-primary" :href="'/api/report/' + jobId + '/html'" download>Download HTML Report</a>
-                                <a class="btn btn-outline" :href="'/api/report/' + jobId + '/json'" download>Download JSON Report</a>
-                                <a class="btn btn-outline" :href="'/api/report/' + jobId + '/vpat'" download>Download VPAT Report</a>
-                            </div>
-
-                            <div class="mt-2">
-                                <button class="btn btn-outline" @click="resetAll()">Start New Audit</button>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-
-                <!-- Footer -->
-                <footer style="text-align:center;color:var(--muted);font-size:.78rem;padding:1.5rem 0;border-top:1px solid var(--border);margin-top:1rem;">
-                    <p>Built with <strong>A11yScope</strong> v2.0 — Canvas LMS accessibility auditor</p>
-                    <p>Open source under AGPL-3.0 License</p>
-                </footer>
             </div>
         </template>
     </div>

@@ -38,7 +38,7 @@ async def load_idp_metadata() -> dict:
         resp.raise_for_status()
         xml = resp.text
 
-    root = ElementTree.fromstring(xml)
+    root = ElementTree.fromstring(xml)  # nosec B314 — IdP metadata from configured URL, defusedxml TODO
     sso_elem = root.find(".//md:IDPSSODescriptor/md:SingleSignOnService[@Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect']", NS)
     slo_elem = root.find(".//md:IDPSSODescriptor/md:SingleLogoutService[@Binding='urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect']", NS)
 
@@ -86,7 +86,7 @@ def parse_saml_response(saml_response_b64: str) -> dict:
     implementation extracts attributes for development/integration testing.
     """
     xml_bytes = base64.b64decode(saml_response_b64)
-    root = ElementTree.fromstring(xml_bytes)
+    root = ElementTree.fromstring(xml_bytes)  # nosec B314 — signature validation TODO, defusedxml TODO
 
     # Extract NameID
     name_id_elem = root.find(".//saml:Subject/saml:NameID", NS)

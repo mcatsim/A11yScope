@@ -25,7 +25,7 @@ async def test_static_js_served(client):
     """GET /static/app.js returns the Alpine.js application."""
     resp = await client.get("/static/app.js")
     assert resp.status_code == 200
-    assert "auditApp" in resp.text
+    assert "dashboardApp" in resp.text
 
 
 @pytest.mark.asyncio

@@ -58,7 +58,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install project + pip-audit
-        run: pip install ".[web]" pip-audit
+        run: pip install ".[web,auth]" pip-audit
       - name: Run pip-audit (CVE check)
         run: pip-audit --format json --output pip-audit-report.json || true
       - name: Display results
