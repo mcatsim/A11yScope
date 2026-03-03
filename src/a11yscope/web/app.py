@@ -22,6 +22,7 @@ from a11yscope.web.api.auth_routes import router as auth_router
 from a11yscope.web.api.admin_routes import router as admin_router
 from a11yscope.web.api.key_routes import router as key_router
 from a11yscope.web.api.scan_routes import router as scan_router
+from a11yscope.web.api.scan_ws import router as scan_ws_router
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +92,7 @@ app.include_router(ai_router, prefix="/api")
 app.include_router(standards_router, prefix="/api")
 app.include_router(key_router, prefix="/api")
 app.include_router(scan_router, prefix="/api")
+app.include_router(scan_ws_router)
 
 # Static files
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
