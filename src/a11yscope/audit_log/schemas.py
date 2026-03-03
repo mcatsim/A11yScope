@@ -47,6 +47,19 @@ class AuditAction(StrEnum):
     SETTING_UPDATED = "setting.updated"
     SSO_CONFIG_UPDATED = "sso.config_updated"
 
+    # API Keys
+    KEY_CREATED = "key.created"
+    KEY_UPDATED = "key.updated"
+    KEY_DELETED = "key.deleted"
+
+    # Scans (new)
+    SCAN_QUEUED = "scan.queued"
+    SCAN_STARTED = "scan.started"
+    SCAN_COMPLETED = "scan.completed"
+    SCAN_FAILED = "scan.failed"
+    SCAN_CANCELLED = "scan.cancelled"
+    SCAN_RESUMED = "scan.resumed"
+
 
 class AuditLogQuery(BaseModel):
     action: str | None = None
