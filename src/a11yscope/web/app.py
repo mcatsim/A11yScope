@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from a11yscope.config import get_settings
 from a11yscope.web.api.config_routes import router as config_router
 from a11yscope.web.api.course_routes import router as course_router
 from a11yscope.web.api.audit_routes import router as audit_router
@@ -64,12 +65,18 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Middleware
+# Middleware — CORS (configurable origins; empty = same-origin only)
+_settings = get_settings()
+_cors_origins = (
+    [o.strip() for o in _settings.cors_origins.split(",") if o.strip()]
+    if _settings.cors_origins
+    else []
+)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
     allow_headers=["*"],
 )
 
@@ -78,6 +85,9 @@ app.add_middleware(RequestIDMiddleware)
 
 from a11yscope.web.middleware.security_headers import SecurityHeadersMiddleware  # noqa: E402
 app.add_middleware(SecurityHeadersMiddleware)
+
+from a11yscope.web.middleware.rate_limit import RateLimitMiddleware  # noqa: E402
+app.add_middleware(RateLimitMiddleware)
 
 # API routes
 app.include_router(auth_router, prefix="/api/auth")

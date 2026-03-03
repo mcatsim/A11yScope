@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     ai_api_key: str = ""
     ai_model: str = ""
 
+    # ── CORS ─────────────────────────────────────────────────────
+    cors_origins: str = ""  # comma-separated origins, empty = same-origin only
+
     # ── Auth ────────────────────────────────────────────────────
     auth_mode: str = "none"  # none | local | sso
     secret_key: str = ""  # JWT signing; auto-generated if blank
